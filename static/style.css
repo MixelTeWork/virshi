@@ -1,0 +1,26 @@
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+	color: inherit;
+	font: inherit;
+	margin: 0;
+}
+
+html, body {
+	min-height: 100vh;
+	min-height: 100dvh;
+}
+
+body {
+	font-family: Inter, Arial, Helvetica, sans-serif;
+	background-color: white;
+	color: black;
+	display: flex;
+	flex-direction: column;
+	text-decoration-skip-ink: none;
+}
+
+a {
+	text-decoration: none;
+}
