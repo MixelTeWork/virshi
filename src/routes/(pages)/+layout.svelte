@@ -1,41 +1,41 @@
 <script lang="ts">
+	import Footer from "./Footer.svelte";
+	import Header from "./Header.svelte";
+
 	let { children } = $props();
 </script>
 
-<header>
-	<a href="/" class="logo">Logo</a>
-	<div class="links">
-		<a href="./authors">Авторы</a>
-		<a href="./about">О проекте</a>
-		<a href="./contact">Контакты</a>
-	</div>
-	<div class="langSwitch">
-		<a href="?lang=ru">ru</a>
-		<a href="?lang=zh">zh</a>
-	</div>
-</header>
+<div class="layout">
+	<Header />
 
-<main>
-	{@render children()}
-</main>
+	<main>
+		{@render children()}
+	</main>
 
-
-<footer>
-	<div class="marquee">
-		<span>Прибытие поезда «вирши»</span>
-		<span class="vsep"></span>
-		<span>г. москва</span>
-		<span class="vsep"></span>
-		<span>28.12.2025</span>
-		<span class="vsep"></span>
-		<span>10:00 — 21:00</span>
-		<span class="hsep"></span>
-	</div>
-</footer>
+	<Footer />
+</div>
 
 <style>
+	.layout {
+		display: grid;
+		grid-template-rows: auto 1fr auto;
+		height: 100vh;
+		height: 100dvh;
+	}
+
 	main {
-		flex-grow: 1;
-		background: linear-gradient(45deg, #5bc3ff, #5b81ff);
+		width: 100%;
+		max-width: 1600px;
+		margin: 0 auto;
+		overflow: auto;
+	}
+
+	main::-webkit-scrollbar {
+		width: 4px;
+	}
+
+	main::-webkit-scrollbar-thumb {
+		background-color: #999;
+		border-radius: 4px;
 	}
 </style>
