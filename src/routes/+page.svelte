@@ -123,6 +123,11 @@
 		background-color: white;
 		padding: 0.75rem 1rem;
 		border-radius: 2rem;
+		transition: background-color 250ms, color 250ms;
+	}
+	.links > a:hover {
+		background-color: #e63737;
+		color: white;
 	}
 	.langSwitch {
 		display: flex;
