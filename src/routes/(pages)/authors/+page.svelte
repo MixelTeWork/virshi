@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { asset, resolve } from "$app/paths";
 	import arrow from "./arrow.svg";
 
 	interface ICard {
@@ -15,24 +16,24 @@
 			title: "Ли Цюнсы",
 			subtitle: "иммерсивный творец",
 			text: "Lorem ipsum dolor sit amet consectetur. Et felis vitae nunc at. Urna tincidunt morbi interdum sed. Lorem ipsum dolor sit amet consectetur. Et felis vitae nunc at. Urna tincidunt morbi interdum sed.",
-			img: "/author1.jpg",
-			url: "/author/1",
+			img: asset("/author1.jpg"),
+			url: resolve("/author/1"),
 		},
 		{
 			isEmpty: false,
 			title: "Иванов Иван",
 			subtitle: "красноречивый оратор",
 			text: "Lorem ipsum dolor sit amet consectetur. Et felis vitae nunc at. Urna tincidunt morbi interdum sed. Lorem ipsum dolor sit amet consectetur. Et felis vitae nunc at. Urna tincidunt morbi interdum sed.",
-			img: "/author2.jpg",
-			url: "/author/2",
+			img: asset("/author2.jpg"),
+			url: resolve("/author/2"),
 		},
 		{
 			isEmpty: false,
 			title: "София Марченко",
 			subtitle: "цифровой художник",
 			text: "Lorem ipsum dolor sit amet consectetur. Et felis vitae nunc at. Urna tincidunt morbi interdum sed. Lorem ipsum dolor sit amet consectetur. Et felis vitae nunc at. Urna tincidunt morbi interdum sed.",
-			img: "/author3.jpg",
-			url: "/author/3",
+			img: asset("/author3.jpg"),
+			url: resolve("/author/3"),
 		},
 		{ isEmpty: true },
 		{ isEmpty: true },
@@ -41,24 +42,24 @@
 			title: "Алексей Петров",
 			subtitle: "архитектор виртуальности",
 			text: "Lorem ipsum dolor sit amet consectetur. Et felis vitae nunc at. Urna tincidunt morbi interdum sed. Lorem ipsum dolor sit amet consectetur. Et felis vitae nunc at. Urna tincidunt morbi interdum sed.",
-			img: "/author4.jpg",
-			url: "/author/4",
+			img: asset("/author4.jpg"),
+			url: resolve("/author/4"),
 		},
 		{
 			isEmpty: false,
 			title: "Томас Андерссон",
 			subtitle: "саунд-продюсер",
 			text: "Lorem ipsum dolor sit amet consectetur. Et felis vitae nunc at. Urna tincidunt morbi interdum sed. Lorem ipsum dolor sit amet consectetur. Et felis vitae nunc at. Urna tincidunt morbi interdum sed.",
-			img: "/author5.jpg",
-			url: "/author/5",
+			img: asset("/author5.jpg"),
+			url: resolve("/author/5"),
 		},
 		{
 			isEmpty: false,
 			title: "Анна Коваль",
 			subtitle: "сценограф-постановщик",
 			text: "Lorem ipsum dolor sit amet consectetur. Et felis vitae nunc at. Urna tincidunt morbi interdum sed. Lorem ipsum dolor sit amet consectetur. Et felis vitae nunc at. Urna tincidunt morbi interdum sed.",
-			img: "/author6.jpg",
-			url: "/author/6",
+			img: asset("/author6.jpg"),
+			url: resolve("/author/6"),
 		},
 	];
 </script>

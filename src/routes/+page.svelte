@@ -3,6 +3,7 @@
 	import { fade } from "svelte/transition";
 	import Footer from "./(pages)/Footer.svelte";
 	import { goto, preloadData } from "$app/navigation";
+	import { asset, resolve } from "$app/paths";
 
 	let intro = $state(false);
 	let outro = $state(false);
@@ -24,15 +25,19 @@
 </script>
 
 <main out:fade={{ duration: 1000 }} class={{ intro, outro }}>
-	<img src="/intro_rails.png" alt="rails" class="rails" />
-	<img src="/intro_train.png" alt="train" class="train" />
-	<img src="/intro_train_door.png" alt="train_door" class="train_door" />
+	<img src={asset("/intro_rails.png")} alt="rails" class="rails" />
+	<img src={asset("/intro_train.png")} alt="train" class="train" />
+	<img
+		src={asset("/intro_train_door.png")}
+		alt="train_door"
+		class="train_door"
+	/>
 	<div class="main">
-		<img src="/logo_white.svg" alt="logo" />
+		<img src={asset("/logo_white.svg")} alt="logo" />
 		<div class="links">
-			<a href="/authors" onclick={go}>Авторы</a>
-			<a href="/about" onclick={go}>О проекте</a>
-			<a href="/contact" onclick={go}>Контакты</a>
+			<a href={resolve("/authors")} onclick={go}>Авторы</a>
+			<a href={resolve("/about")} onclick={go}>О проекте</a>
+			<a href={resolve("/contact")} onclick={go}>Контакты</a>
 			<div class="langSwitch">
 				<a href="?lang=ru" class="active">ru</a>
 				<a href="?lang=zh">zh</a>
@@ -48,7 +53,7 @@
 	main {
 		position: fixed;
 		inset: 0;
-		background: url("/intro_bg.jpg");
+		background: url(/intro_bg.jpg);
 		background-size: cover;
 	}
 

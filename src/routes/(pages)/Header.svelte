@@ -1,11 +1,15 @@
+<script>
+    import { asset, resolve } from "$app/paths";
+
+</script>
 <header>
-	<a href="/" class="logo">
-		<img src="/logo.svg" alt="logo" />
+	<a href={resolve("/")} class="logo">
+		<img src={asset("/logo.svg")} alt="logo" />
 	</a>
 	<div class="links">
-		<a href="/authors">Авторы</a>
-		<a href="/about">О проекте</a>
-		<a href="/contact">Контакты</a>
+		<a href={resolve("/authors")}>Авторы</a>
+		<a href={resolve("/about")}>О проекте</a>
+		<a href={resolve("/contact")}>Контакты</a>
 	</div>
 	<div class="langSwitch">
 		<a href="?lang=ru" class="active">ru</a>
