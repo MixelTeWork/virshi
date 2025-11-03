@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { asset, resolve } from "$app/paths";
+	import { asset, resolve } from "$app/paths";
 	import arrow from "./arrow.svg";
 
 	interface ICard {
@@ -94,6 +94,12 @@
 		grid-template-columns: repeat(4, 1fr);
 	}
 
+	@media screen and (max-width: 500px) {
+		.grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
 	.card {
 		position: relative;
 		aspect-ratio: 4/5;
@@ -118,14 +124,18 @@
 		opacity: 0;
 		transition: opacity 300ms;
 	}
-	.card:hover .card__content {
+	.card:hover .card__content,
+	.card:focus-within .card__content {
 		opacity: 1;
 	}
 	.card__text {
 		transform: translateY(1rem);
-		transition: opacity 300ms, transform 300ms;
+		transition:
+			opacity 300ms,
+			transform 300ms;
 	}
-	.card:hover .card__text {
+	.card:hover .card__text,
+	.card:focus-within .card__text {
 		transform: translateY(0rem);
 	}
 

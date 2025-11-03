@@ -9,7 +9,9 @@
 	let outro = $state(false);
 
 	onMount(() => {
-		intro = true;
+		setTimeout(() => {
+			intro = true;
+		}, 500);
 	});
 
 	function go(this: HTMLAnchorElement, e: MouseEvent) {
@@ -23,6 +25,10 @@
 		}, 1500);
 	}
 </script>
+
+<svelte:head>
+	<title>VERSHI</title>
+</svelte:head>
 
 <main out:fade={{ duration: 1000 }} class={{ intro, outro }}>
 	<img src={asset("/intro_rails.png")} alt="rails" class="rails" />
@@ -61,12 +67,16 @@
 	.train,
 	.train_door {
 		position: absolute;
-		width: 100%;
+		left: 50%;
+		width: auto;
 		height: 100%;
-		object-fit: cover;
 		transition:
 			translate 1s,
 			scale 1s;
+	}
+	.rails {
+		width: 100%;
+		left: 0;
 	}
 	.train,
 	.train_door {
@@ -74,7 +84,7 @@
 	}
 	.intro .train,
 	.intro .train_door {
-		translate: 0% 0%;
+		translate: -50% 0%;
 	}
 	.outro .rails,
 	.outro .train,
@@ -82,7 +92,7 @@
 		transition:
 			translate 1.5s 0.5s,
 			scale 1.5s 0.5s;
-		scale: 2;
+		scale: 3;
 	}
 	.outro .train_door {
 		translate: 100% 0%;
@@ -95,6 +105,7 @@
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
+		gap: 2rem;
 		z-index: 2;
 		opacity: 0;
 		transition: opacity 1.5s 1s;
@@ -109,34 +120,52 @@
 	}
 
 	.main img {
-		width: min(900px, 80vw);
+		width: min(900px, 90vw);
 	}
 
 	.links {
 		display: flex;
+		flex-wrap: wrap;
 		font-family: Inter, Arial, Helvetica, sans-serif;
 		font-weight: 500;
-		font-size: 0.75rem;
+		font-size: 0.875rem;
 		text-transform: uppercase;
 	}
 	.links > * {
 		background-color: white;
 		padding: 0.75rem 1rem;
 		border-radius: 2rem;
-		transition: background-color 250ms, color 250ms;
+		transition:
+			background-color 250ms,
+			color 250ms;
+		outline: none;
 	}
-	.links > a:hover {
+	.links > :hover,
+	.links > :focus-visible,
+	.langSwitch:focus-within {
 		background-color: #e63737;
 		color: white;
 	}
 	.langSwitch {
 		display: flex;
-		gap: 0.5rem;
-		color: #767676;
+		padding: 0.5rem 0.75rem;
+	}
+	.langSwitch a {
+		padding: 0.25rem;
+		opacity: 0.5;
+	}
+	.langSwitch a.active {
+		opacity: 1;
 	}
 
-	.active {
-		color: black;
+	@media screen and (max-width: 500px) {
+		.langSwitch {
+			position: absolute;
+			top: 1rem;
+			right: 1rem;
+			background-color: transparent !important;
+			color: white;
+		}
 	}
 
 	.footer {

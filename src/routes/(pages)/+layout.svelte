@@ -18,7 +18,7 @@
 <style>
 	.layout {
 		display: grid;
-		grid-template-rows: auto 1fr auto;
+		grid-template-rows: auto 1fr 3.8rem;
 		height: 100vh;
 		height: 100dvh;
 	}
@@ -32,6 +32,7 @@
 
 	main::-webkit-scrollbar {
 		width: 4px;
+		height: 4px;
 	}
 
 	main::-webkit-scrollbar-thumb {
