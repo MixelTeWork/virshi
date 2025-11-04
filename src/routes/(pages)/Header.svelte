@@ -107,6 +107,12 @@
 		opacity: 1;
 	}
 
+	@media screen and (max-width: 600px) {
+		.container {
+			padding: 2rem;
+		}
+	}
+
 	@media screen and (max-width: 500px) {
 		header {
 			font-family: Manrope, Arial, Helvetica, sans-serif;

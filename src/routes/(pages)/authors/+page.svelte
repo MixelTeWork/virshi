@@ -27,6 +27,8 @@
 			img: asset("/author2.jpg"),
 			url: resolve("/author/2"),
 		},
+		{ isEmpty: true },
+		{ isEmpty: true },
 		{
 			isEmpty: false,
 			title: "София Марченко",
@@ -61,6 +63,7 @@
 			img: asset("/author6.jpg"),
 			url: resolve("/author/6"),
 		},
+		{ isEmpty: true },
 	];
 </script>
 
@@ -70,7 +73,7 @@
 
 <div class="grid">
 	{#each cards as card}
-		<div class="card">
+		<div class={["card", { empty: card.isEmpty }]}>
 			{#if card.isEmpty}
 				<div class="cross"></div>
 			{:else}
@@ -94,18 +97,44 @@
 		grid-template-columns: repeat(4, 1fr);
 	}
 
-	@media screen and (max-width: 500px) {
-		.grid {
-			grid-template-columns: 1fr;
-		}
-	}
-
 	.card {
 		position: relative;
 		aspect-ratio: 4/5;
 		display: flex;
 		flex-direction: column;
 		justify-content: end;
+	}
+	.empty:nth-child(3),
+	.empty:nth-child(4),
+	.empty:nth-child(11) {
+		display: none;
+	}
+
+	@media screen and (max-width: 1200px) {
+		.grid {
+			grid-template-columns: repeat(3, 1fr);
+		}
+		.empty {
+			display: none;
+		}
+		.empty:nth-child(3),
+		.empty:nth-child(4),
+		.empty:nth-child(11) {
+			display: flex;
+		}
+	}
+	@media screen and (max-width: 800px) {
+		.grid {
+			grid-template-columns: 1fr 1fr;
+		}
+		.empty {
+			display: none !important;
+		}
+	}
+	@media screen and (max-width: 500px) {
+		.grid {
+			grid-template-columns: 1fr;
+		}
 	}
 
 	.card > img {
@@ -137,6 +166,15 @@
 	.card:hover .card__text,
 	.card:focus-within .card__text {
 		transform: translateY(0rem);
+	}
+
+	@media screen and (max-width: 500px) {
+		.card__content {
+			opacity: 1;
+		}
+		.card__text {
+			transform: translateY(0rem);
+		}
 	}
 
 	h2,
