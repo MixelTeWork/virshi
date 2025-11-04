@@ -9,7 +9,9 @@
 	<Header />
 
 	<main>
-		{@render children()}
+		<div class="content">
+			{@render children()}
+		</div>
 	</main>
 
 	<Footer />
@@ -24,19 +26,11 @@
 	}
 
 	main {
+		overflow: auto;
+	}
+	.content {
 		width: 100%;
 		max-width: 1600px;
 		margin: 0 auto;
-		overflow: auto;
-	}
-
-	main::-webkit-scrollbar {
-		width: 4px;
-		height: 4px;
-	}
-
-	main::-webkit-scrollbar-thumb {
-		background-color: #999;
-		border-radius: 4px;
 	}
 </style>

@@ -5,6 +5,7 @@
 	color: inherit;
 	font: inherit;
 	margin: 0;
+	padding: 0;
 }
 
 html,
@@ -20,6 +21,7 @@ body {
 	display: flex;
 	flex-direction: column;
 	text-decoration-skip-ink: none;
+	line-height: 1;
 }
 
 a {
@@ -29,4 +31,6 @@ a {
 button {
 	background: none;
 	border: none;
+	cursor: pointer;
+	user-select: none;
 }

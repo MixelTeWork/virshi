@@ -15,7 +15,7 @@
 			</a>
 			<button
 				class="burgerBtn"
-				aria-label="open menu"
+				aria-label="открыть меню"
 				onclick={() => {
 					open = !open;
 				}}
@@ -45,7 +45,6 @@
 		font-size: 0.75rem;
 		font-weight: 500;
 		text-transform: uppercase;
-		line-height: 1;
 	}
 	.container {
 		display: flex;

@@ -1,68 +1,32 @@
 <script lang="ts">
-	import { asset, resolve } from "$app/paths";
-	import arrow from "./arrow.svg";
+	import { resolve } from "$app/paths";
+	import arrow from "$lib/arrow.svg";
+	import { authors } from "$lib/data";
 
 	interface ICard {
 		isEmpty: boolean;
-		title?: string;
+		name?: string;
 		subtitle?: string;
 		text?: string;
 		img?: string;
 		url?: string;
 	}
+	const authorsCards = authors.map((author) => ({
+		isEmpty: false,
+		url: resolve(`/author/${author.id}`),
+		...author,
+	}));
 	const cards: ICard[] = [
-		{
-			isEmpty: false,
-			title: "Ли Цюнсы",
-			subtitle: "иммерсивный творец",
-			text: "Lorem ipsum dolor sit amet consectetur. Et felis vitae nunc at. Urna tincidunt morbi interdum sed. Lorem ipsum dolor sit amet consectetur. Et felis vitae nunc at. Urna tincidunt morbi interdum sed.",
-			img: asset("/author1.jpg"),
-			url: resolve("/author/1"),
-		},
-		{
-			isEmpty: false,
-			title: "Иванов Иван",
-			subtitle: "красноречивый оратор",
-			text: "Lorem ipsum dolor sit amet consectetur. Et felis vitae nunc at. Urna tincidunt morbi interdum sed. Lorem ipsum dolor sit amet consectetur. Et felis vitae nunc at. Urna tincidunt morbi interdum sed.",
-			img: asset("/author2.jpg"),
-			url: resolve("/author/2"),
-		},
+		authorsCards[0],
+		authorsCards[1],
 		{ isEmpty: true },
 		{ isEmpty: true },
-		{
-			isEmpty: false,
-			title: "София Марченко",
-			subtitle: "цифровой художник",
-			text: "Lorem ipsum dolor sit amet consectetur. Et felis vitae nunc at. Urna tincidunt morbi interdum sed. Lorem ipsum dolor sit amet consectetur. Et felis vitae nunc at. Urna tincidunt morbi interdum sed.",
-			img: asset("/author3.jpg"),
-			url: resolve("/author/3"),
-		},
+		authorsCards[2],
 		{ isEmpty: true },
 		{ isEmpty: true },
-		{
-			isEmpty: false,
-			title: "Алексей Петров",
-			subtitle: "архитектор виртуальности",
-			text: "Lorem ipsum dolor sit amet consectetur. Et felis vitae nunc at. Urna tincidunt morbi interdum sed. Lorem ipsum dolor sit amet consectetur. Et felis vitae nunc at. Urna tincidunt morbi interdum sed.",
-			img: asset("/author4.jpg"),
-			url: resolve("/author/4"),
-		},
-		{
-			isEmpty: false,
-			title: "Томас Андерссон",
-			subtitle: "саунд-продюсер",
-			text: "Lorem ipsum dolor sit amet consectetur. Et felis vitae nunc at. Urna tincidunt morbi interdum sed. Lorem ipsum dolor sit amet consectetur. Et felis vitae nunc at. Urna tincidunt morbi interdum sed.",
-			img: asset("/author5.jpg"),
-			url: resolve("/author/5"),
-		},
-		{
-			isEmpty: false,
-			title: "Анна Коваль",
-			subtitle: "сценограф-постановщик",
-			text: "Lorem ipsum dolor sit amet consectetur. Et felis vitae nunc at. Urna tincidunt morbi interdum sed. Lorem ipsum dolor sit amet consectetur. Et felis vitae nunc at. Urna tincidunt morbi interdum sed.",
-			img: asset("/author6.jpg"),
-			url: resolve("/author/6"),
-		},
+		authorsCards[3],
+		authorsCards[4],
+		authorsCards[5],
 		{ isEmpty: true },
 	];
 </script>
@@ -81,7 +45,7 @@
 				<div class="card__content">
 					<a href={card.url}><img src={arrow} alt="перейти" /></a>
 					<div class="card__text">
-						<h2>{card.title}</h2>
+						<h2>{card.name}</h2>
 						<h3>{card.subtitle}</h3>
 						<p>{card.text}</p>
 					</div>
