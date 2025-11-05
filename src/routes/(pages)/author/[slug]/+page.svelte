@@ -4,6 +4,7 @@
 	import logo from "$lib/logo.svg";
 	import Gallery from "./Gallery.svelte";
 	import { authors } from "$lib/data";
+    import { fade } from "svelte/transition";
 
 	let slug = page.params.slug;
 	const author = authors.find((v) => v.id == slug);
@@ -14,7 +15,7 @@
 	<title>Автор</title>
 </svelte:head>
 
-<div class="page">
+<div class="page" transition:fade={{ duration: 150 }}>
 	<div class="main">
 		<img src={logo} alt="" class="logo" />
 		<div class="breadcrumbs">

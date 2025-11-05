@@ -31,7 +31,7 @@
 	}}
 />
 
-<div class="page">
+<div class="page" transition:fade={{ duration: 150 }}>
 	<div class="content">
 		<div>
 			<h1>О проекте</h1>

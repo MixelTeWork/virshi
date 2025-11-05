@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { fade } from "svelte/transition";
 	import map from "./map.jpg";
 </script>
 
@@ -6,7 +7,7 @@
 	<title>Контакты</title>
 </svelte:head>
 
-<div class="page">
+<div class="page" transition:fade={{ duration: 150 }}>
 	<div class="content">
 		<div>
 			<h1>Контакты</h1>

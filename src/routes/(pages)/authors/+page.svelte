@@ -2,6 +2,7 @@
 	import { resolve } from "$app/paths";
 	import arrow from "$lib/arrow.svg";
 	import { authors } from "$lib/data";
+	import { fade } from "svelte/transition";
 
 	interface ICard {
 		isEmpty: boolean;
@@ -35,7 +36,7 @@
 	<title>Авторы</title>
 </svelte:head>
 
-<div class="grid">
+<div class="grid" transition:fade={{ duration: 150 }}>
 	{#each cards as card}
 		<div class={["card", { empty: card.isEmpty }]}>
 			{#if card.isEmpty}
