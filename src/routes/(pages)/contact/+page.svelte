@@ -1,37 +1,41 @@
 <script lang="ts">
-    import { fade } from "svelte/transition";
+	import { fade } from "svelte/transition";
 	import map from "./map.jpg";
+	import { lt } from "$lib/ltext";
 </script>
 
 <svelte:head>
-	<title>Контакты</title>
+	<title>{$lt("Контакты", "Contacts")}</title>
 </svelte:head>
 
 <div class="page" transition:fade={{ duration: 150 }}>
 	<div class="content">
 		<div>
-			<h1>Контакты</h1>
+			<h1>{$lt("Контакты", "Contacts")}</h1>
 			<p>
-				Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi
-				nulla hic similique quasi pariatur, voluptates ad doloribus quia
-				deleniti id aut qui, ducimus quo? Ex amet consequuntur
-				accusantium accusamus sint?
+				{$lt(
+					"Лорем ипсум долор сит амет, ад сед яуем вирис сплендиде. Сит ребум ириуре цонцлудатуряуе еи, пертинах интеллегам еум еа. Цаусае вивендум ад цум, аццумсан репрехендунт хас не, иллум индоцтум сеа но.",
+					"Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eveniet assumenda impedit quae, vero eum minima quasi quis saepe veniam sapiente pariatur accusantium tempore. Repudiandae error, possimus architecto enim corporis optio?",
+				)}
 			</p>
 			<p>
-				Lorem ipsum dolor sit amet consectetur adipisicing elit. Est
-				sint voluptates dolor a illum eaque, deleniti exercitationem
-				dolorum maiores, nesciunt possimus natus odio modi non, hic
-				commodi fugiat blanditiis quibusdam?
+				{$lt(
+					"Иус ех идяуе темпорибус, хас цу нострум маиестатис, симул персиус вис те. Торяуатос цомпрехенсам не еос. Хис ат меис десеруиссе, нумяуам темпорибус меи еа, детрацто делецтус сингулис ан яуо. Оптион регионе лаборес иус но.",
+					"Lorem ipsum dolor sit amet consectetur adipisicing elit. Maiores, illum. Incidunt placeat quaerat quas beatae blanditiis excepturi cum, ad esse, assumenda saepe sunt similique eveniet tempora. Reiciendis inventore iure corporis.",
+				)}
 			</p>
 		</div>
 		<div class="items">
-			{@render item("Почта", "mail@domen.ru")}
-			{@render item("Телефон", "+7 (499) 343-33-32")}
-			{@render item("Адрес", "г. Москва, проспект Вернадского, д. 76")}
+			{@render item($lt("Почта", "Mail"), "mail@domen.ru")}
+			{@render item($lt("Телефон", "Phone"), "+7 (499) 343-33-32")}
+			{@render item(
+				$lt("Адрес", "Address"),
+				$lt("г. Москва, проспект Вернадского, д. 76", "76 Vernadsky Avenue, Moscow"),
+			)}
 		</div>
 	</div>
 	<div class="map">
-		<img src={map} alt="Карта" />
+		<img src={map} alt={$lt("Карта", "Map")} />
 	</div>
 </div>
 

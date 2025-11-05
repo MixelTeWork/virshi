@@ -6,6 +6,7 @@
 	import { fade } from "svelte/transition";
 	import Popup from "$lib/Popup/Popup.svelte";
 	import { scrolling } from "$lib/scrolling.svelte";
+	import { lt, lto } from "$lib/ltext";
 
 	let selectedI = $state(-1);
 	const selected = $derived(creators[selectedI]);
@@ -15,7 +16,7 @@
 <svelte:window bind:innerWidth={windowWidth} />
 
 <svelte:head>
-	<title>О проекте</title>
+	<title>{$lt("О проекте", "About project")}</title>
 </svelte:head>
 
 <Popup
@@ -34,18 +35,18 @@
 <div class="page" transition:fade={{ duration: 150 }}>
 	<div class="content">
 		<div>
-			<h1>О проекте</h1>
+			<h1>{$lt("О проекте", "About proj")}</h1>
 			<p>
-				Lorem ipsum dolor, sit amet consectetur adipisicing elit.
-				Eveniet assumenda impedit quae, vero eum minima quasi quis saepe
-				veniam sapiente pariatur accusantium tempore. Repudiandae error,
-				possimus architecto enim corporis optio?
+				{$lt(
+					"Лорем ипсум долор сит амет, ад сед яуем вирис сплендиде. Сит ребум ириуре цонцлудатуряуе еи, пертинах интеллегам еум еа. Цаусае вивендум ад цум, аццумсан репрехендунт хас не, иллум индоцтум сеа но.",
+					"Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eveniet assumenda impedit quae, vero eum minima quasi quis saepe veniam sapiente pariatur accusantium tempore. Repudiandae error, possimus architecto enim corporis optio?",
+				)}
 			</p>
 			<p>
-				Lorem ipsum dolor sit amet consectetur adipisicing elit.
-				Maiores, illum. Incidunt placeat quaerat quas beatae blanditiis
-				excepturi cum, ad esse, assumenda saepe sunt similique eveniet
-				tempora. Reiciendis inventore iure corporis.
+				{$lt(
+					"Иус ех идяуе темпорибус, хас цу нострум маиестатис, симул персиус вис те. Торяуатос цомпрехенсам не еос. Хис ат меис десеруиссе, нумяуам темпорибус меи еа, детрацто делецтус сингулис ан яуо. Оптион регионе лаборес иус но.",
+					"Lorem ipsum dolor sit amet consectetur adipisicing elit. Maiores, illum. Incidunt placeat quaerat quas beatae blanditiis excepturi cum, ad esse, assumenda saepe sunt similique eveniet tempora. Reiciendis inventore iure corporis.",
+				)}
 			</p>
 		</div>
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -56,7 +57,7 @@
 				selectedI = -1;
 			}}
 		>
-			<h2>Создатели</h2>
+			<h2>{$lt("Создатели", "Creators")}</h2>
 			<div class="creators__items">
 				{#each creators as creator, i}
 					<button
@@ -72,13 +73,13 @@
 							selectedI = i;
 						}}
 					>
-						<img src={creator.img} alt={creator.name} />
+						<img src={creator.img} alt={$lto(creator.name)} />
 					</button>
 				{/each}
 			</div>
 		</div>
 		<div class="sponsors">
-			<h2>Спонсоры</h2>
+			<h2>{$lt("Спонсоры", "Sponsors")}</h2>
 			<div class="sponsors__items" use:scrolling={{ speed: 2 }}>
 				<img src={asset("/sponsor.png")} alt="Спонсор 1" />
 				<img src={asset("/sponsor.png")} alt="Спонсор 2" />
@@ -91,18 +92,18 @@
 		<div class="logo">
 			<img src={logo} alt="" />
 		</div>
-		<img src={image} alt="Картинка" class="img__bg" />
+		<img src={image} alt="" class="img__bg" />
 		{#if selected}
 			<img
 				transition:fade={{ duration: 250 }}
 				src={selected.img}
-				alt={selected.name}
+				alt={$lto(selected.name)}
 				class="img__creator"
 			/>
 			<div class="img__content" transition:fade={{ duration: 250 }}>
-				<h2>{selected.name}</h2>
-				<h3>{selected.subtitle}</h3>
-				<p>{selected.text}</p>
+				<h2>{$lto(selected.name)}</h2>
+				<h3>{$lto(selected.subtitle)}</h3>
+				<p>{$lto(selected.text)}</p>
 			</div>
 		{/if}
 	</div>

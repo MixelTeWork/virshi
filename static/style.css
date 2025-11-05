@@ -30,7 +30,9 @@ a {
 
 button {
 	background: none;
+	padding: 0;
 	border: none;
 	cursor: pointer;
 	user-select: none;
+	text-transform: inherit;
 }

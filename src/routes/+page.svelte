@@ -4,6 +4,7 @@
 	import Footer from "./(pages)/Footer.svelte";
 	import { goto, preloadData } from "$app/navigation";
 	import { asset, resolve } from "$app/paths";
+	import { curLang, locale, lt, setLocale } from "$lib/ltext";
 
 	let intro = $state(false);
 	let outro = $state(false);
@@ -30,7 +31,7 @@
 	<title>VERSHI</title>
 </svelte:head>
 
-<main out:fade={{ duration: 1000 }} class={{ intro, outro }}>
+<main out:fade={{ duration: 1000 }} class={{ intro, outro }} use:locale>
 	<img src={asset("/intro_rails.png")} alt="rails" class="rails" />
 	<img src={asset("/intro_train.png")} alt="train" class="train" />
 	<img
@@ -41,12 +42,24 @@
 	<div class="main">
 		<img src={asset("/logo_white.svg")} alt="logo" />
 		<div class="links">
-			<a href={resolve("/authors")} onclick={go}>Авторы</a>
-			<a href={resolve("/about")} onclick={go}>О проекте</a>
-			<a href={resolve("/contact")} onclick={go}>Контакты</a>
+			<a href={resolve("/authors")} onclick={go}>
+				{$lt("Авторы", "Authors")}
+			</a>
+			<a href={resolve("/about")} onclick={go}>
+				{$lt("О проекте", "About")}
+			</a>
+			<a href={resolve("/contact")} onclick={go}>
+				{$lt("Контакты", "Contact")}
+			</a>
 			<div class="langSwitch">
-				<a href="?lang=ru" class="active">ru</a>
-				<a href="?lang=zh">zh</a>
+				<button
+					class={{ active: $curLang == "ru" }}
+					onclick={() => setLocale("ru")}>ru</button
+				>
+				<button
+					class={{ active: $curLang == "zh" }}
+					onclick={() => setLocale("zh")}>zh</button
+				>
 			</div>
 		</div>
 	</div>
@@ -150,11 +163,11 @@
 		display: flex;
 		padding: 0.5rem 0.75rem;
 	}
-	.langSwitch a {
+	.langSwitch button {
 		padding: 0.25rem;
 		opacity: 0.5;
 	}
-	.langSwitch a.active {
+	.langSwitch button.active {
 		opacity: 1;
 	}
 

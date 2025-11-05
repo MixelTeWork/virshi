@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { asset, resolve } from "$app/paths";
+	import { curLang, lt, setLocale } from "$lib/ltext";
 
 	let open = $state(false);
 	function close() {
@@ -15,7 +16,7 @@
 			</a>
 			<button
 				class="burgerBtn"
-				aria-label="открыть меню"
+				aria-label={$lt("открыть меню", "open menu")}
 				onclick={() => {
 					open = !open;
 				}}
@@ -26,13 +27,25 @@
 			</button>
 		</div>
 		<nav class="links">
-			<a href={resolve("/authors")} onclick={close}>Авторы</a>
-			<a href={resolve("/about")} onclick={close}>О проекте</a>
-			<a href={resolve("/contact")} onclick={close}>Контакты</a>
+			<a href={resolve("/authors")} onclick={close}>
+				{$lt("Авторы", "Authors")}
+			</a>
+			<a href={resolve("/about")} onclick={close}>
+				{$lt("О проекте", "About")}
+			</a>
+			<a href={resolve("/contact")} onclick={close}>
+				{$lt("Контакты", "Contact")}
+			</a>
 		</nav>
 		<div class="langSwitch">
-			<a href="?lang=ru" class="active">ru</a>
-			<a href="?lang=zh">zh</a>
+			<button
+				class={{ active: $curLang == "ru" }}
+				onclick={() => setLocale("ru")}>ru</button
+			>
+			<button
+				class={{ active: $curLang == "zh" }}
+				onclick={() => setLocale("zh")}>zh</button
+			>
 		</div>
 	</div>
 </header>
@@ -98,11 +111,11 @@
 	.langSwitch {
 		display: flex;
 	}
-	.langSwitch a {
+	.langSwitch button {
 		padding: 0.25rem;
 		opacity: 0.5;
 	}
-	.langSwitch a.active {
+	.langSwitch button.active {
 		opacity: 1;
 	}
 

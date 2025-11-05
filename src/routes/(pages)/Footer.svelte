@@ -1,9 +1,13 @@
+<script>
+    import { lt } from "$lib/ltext";
+
+</script>
 <footer>
 	<div class="marquee">
 		{#each { length: 5 }}
-			<span>Прибытие поезда «вирши»</span>
+			<span>{$lt("Прибытие поезда «вирши»", "Arrival of the train «Virshi»")}</span>
 			<span class="vsep"></span>
-			<span>г. москва</span>
+			<span>{$lt("г. москва", "Moscow")}</span>
 			<span class="vsep"></span>
 			<span>28.12.2025</span>
 			<span class="vsep"></span>

@@ -3,6 +3,7 @@
 	import arrow from "$lib/arrow.svg";
 	import type { IProject } from "$lib/data";
 	import Popup from "$lib/Popup/Popup.svelte";
+    import { lt, lto } from "$lib/ltext";
 
 	interface Props {
 		projects: IProject[];
@@ -14,6 +15,7 @@
 	export function select(i: number, onlyHor = false) {
 		selected = (i + projects.length) % projects.length;
 		cards[selected].scrollIntoView({
+			// @ts-ignore
 			container: onlyHor ? "nearest" : "all",
 			behavior: "smooth",
 		});
@@ -46,18 +48,18 @@
 
 <div class="gallery" bind:this={galleryEl}>
 	<div class="title">
-		<h2>Галерея</h2>
+		<h2>{$lt( "Галерея", "Gallery")}</h2>
 		<div class="pager">
 			<span>{selected < 9 ? "0" : ""}{selected + 1}</span>
 			<span> — </span>
 			<span>{projects.length < 10 ? "0" : ""}{projects.length}</span>
 		</div>
 		<div class="btns">
-			<button aria-label="предыдущее" onclick={selectPrev}>
-				<img src={arrow} alt="предыдущее" />
+			<button aria-label={$lt("предыдущее", "previous")} onclick={selectPrev}>
+				<img src={arrow} alt={$lt("предыдущее", "previous")} />
 			</button>
-			<button aria-label="следующее" onclick={selectNext}>
-				<img src={arrow} alt="следующее" />
+			<button aria-label={$lt("следующее", "next")} onclick={selectNext}>
+				<img src={arrow} alt={$lt("следующее", "next")} />
 			</button>
 		</div>
 	</div>
@@ -69,19 +71,19 @@
 					bind:this={cards[i]}
 				>
 					<div class="project__img">
-						<img src={proj.img} alt={proj.name} />
+						<img src={proj.img} alt={$lto(proj.name)} />
 					</div>
 					<div class="project__subtitle">
-						Цифровое пространство · 2025
+						{$lto(proj.subtitle)}
 					</div>
-					<h3 class="project__title">{proj.name}</h3>
+					<h3 class="project__title">{$lto(proj.name)}</h3>
 					<button
 						class="project__btn"
 						onclick={() => {
 							openedProject = i;
 						}}
 					>
-						<span>Читать больше</span>
+						<span>{$lt("Читать больше", "Read more")}</span>
 						<img src={arrowD} alt="" />
 					</button>
 				</div>

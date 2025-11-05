@@ -1,14 +1,15 @@
 <script lang="ts">
 	import { resolve } from "$app/paths";
 	import arrow from "$lib/arrow.svg";
-	import { authors } from "$lib/data";
+	import { authors, type LText } from "$lib/data";
+    import { lto, lt } from "$lib/ltext";
 	import { fade } from "svelte/transition";
 
 	interface ICard {
 		isEmpty: boolean;
-		name?: string;
-		subtitle?: string;
-		text?: string;
+		name?: LText;
+		subtitle?: LText;
+		text?: LText;
 		img?: string;
 		url?: string;
 	}
@@ -33,7 +34,7 @@
 </script>
 
 <svelte:head>
-	<title>Авторы</title>
+	<title>{$lt("Авторы", "Authors")}</title>
 </svelte:head>
 
 <div class="grid" transition:fade={{ duration: 150 }}>
@@ -42,13 +43,13 @@
 			{#if card.isEmpty}
 				<div class="cross"></div>
 			{:else}
-				<img src={card.img} alt="фото автора" />
+				<img src={card.img} alt={$lto(card.name)} />
 				<div class="card__content">
-					<a href={card.url}><img src={arrow} alt="перейти" /></a>
+					<a href={card.url}><img src={arrow} alt={$lt("перейти", "go to")} /></a>
 					<div class="card__text">
-						<h2>{card.name}</h2>
-						<h3>{card.subtitle}</h3>
-						<p>{card.text}</p>
+						<h2>{$lto(card.name)}</h2>
+						<h3>{$lto(card.subtitle)}</h3>
+						<p>{$lto(card.text)}</p>
 					</div>
 				</div>
 			{/if}

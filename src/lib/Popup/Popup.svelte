@@ -1,15 +1,16 @@
 <script lang="ts">
-	import type { IProject } from "$lib/data";
+	import type { IProject, LText } from "$lib/data";
 	import cross from "./cross.svg";
 	import arrow from "./arrow_white.svg";
 	import { trapFocus } from "$lib/trapFocus.svelte";
 	import { fade } from "svelte/transition";
+    import { lto, lt } from "$lib/ltext";
 
 	interface Item {
-		name: string;
-		subtitle: string;
+		name: LText;
+		subtitle: LText;
 		img: string;
-		text: string;
+		text: LText;
 	}
 	interface Props {
 		project: Item | null;
@@ -36,7 +37,7 @@
 				<img
 					class="img"
 					src={project.img}
-					alt={project.name}
+					alt={$lto(project.name)}
 					transition:fade={{ duration: 250 }}
 				/>
 			{/key}
@@ -44,20 +45,20 @@
 				<div class="header">
 					<div class="btns">
 						<button onclick={selectPrev}>
-							<img src={arrow} alt="предыдущее" />
+							<img src={arrow} alt={$lt("предыдущее", "previous")} />
 						</button>
 						<button onclick={selectNext}>
-							<img src={arrow} alt="следующее" />
+							<img src={arrow} alt={$lt("следующее", "next")} />
 						</button>
 					</div>
 					<button onclick={close}>
-						<img src={cross} alt="закрыть" />
+						<img src={cross} alt={$lt("закрыть", "close")} />
 					</button>
 				</div>
 				<div class="body">
-					<h2>{project.name}</h2>
-					<h3>{project.subtitle}</h3>
-					<p>{project.text}</p>
+					<h2>{$lto(project.name)}</h2>
+					<h3>{$lto(project.subtitle)}</h3>
+					<p>{$lto(project.text)}</p>
 				</div>
 			</div>
 		</div>

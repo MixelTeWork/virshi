@@ -1,11 +1,12 @@
 <script lang="ts">
+	import { locale } from "$lib/ltext";
 	import Footer from "./Footer.svelte";
 	import Header from "./Header.svelte";
 
 	let { children } = $props();
 </script>
 
-<div class="layout">
+<div class="layout" use:locale>
 	<Header />
 
 	<main>

@@ -5,6 +5,7 @@
 	import Gallery from "./Gallery.svelte";
 	import { authors } from "$lib/data";
     import { fade } from "svelte/transition";
+    import { lt, lto } from "$lib/ltext";
 
 	let slug = page.params.slug;
 	const author = authors.find((v) => v.id == slug);
@@ -12,7 +13,7 @@
 </script>
 
 <svelte:head>
-	<title>Автор</title>
+	<title>{$lt("Автор", "Author")} - {$lto(author?.name)}</title>
 </svelte:head>
 
 <div class="page" transition:fade={{ duration: 150 }}>
@@ -20,41 +21,41 @@
 		<img src={logo} alt="" class="logo" />
 		<div class="breadcrumbs">
 			<div>
-				<span>Авторы</span>
+				<span>{$lt("Авторы", "Authors")}</span>
 				<span class="hline"></span>
-				<span>{author?.name}</span>
+				<span>{$lto(author?.name)}</span>
 			</div>
 		</div>
 		<div class="img">
-			<img src={author?.img} alt="Портрет автора" />
+			<img src={author?.img} alt={$lto(author?.name)} />
 		</div>
 		<div class="content">
-			<h1 class="title">{author?.name}</h1>
+			<h1 class="title">{$lto(author?.name)}</h1>
 			<div class="tags">
 				{#each author?.tags as tag}
-					<span>{tag}</span>
+					<span>{$lto(tag)}</span>
 				{/each}
 			</div>
 			<div class="bio">
-				<h2>Биография</h2>
-				{#each author?.text.split("\n") as p}
+				<h2>{$lt("Биография", "Biography")}</h2>
+				{#each $lto(author?.text)?.split?.("\n") as p}
 					<p>{p}</p>
 				{/each}
 			</div>
 			<div class="gallery">
 				<div class="gallery__title">
-					<h2>Галерея</h2>
+					<h2>{$lt("Галерея", "Gallery")}</h2>
 					<button
-						aria-label="к галерее"
+						aria-label={$lt("к галерее", "to gallery")}
 						onclick={() => gallery.scrollIntoView()}
 					>
-						<img src={arrow} alt="перейти" />
+						<img src={arrow} alt={$lt("перейти", "go to")} />
 					</button>
 				</div>
 				<div class="gallery__imgs">
 					{#each author?.projects as proj, i}
 						<button onclick={() => gallery.select(i)}>
-							<img src={proj.img} alt={proj.name} />
+							<img src={proj.img} alt={$lto(proj.name)} />
 						</button>
 					{/each}
 				</div>
