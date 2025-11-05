@@ -108,3 +108,42 @@ export const authors: IAuthor[] = [
 		projects,
 	},
 ];
+
+export const creators: IAuthor[] = [
+	{
+		id: "ivan",
+		name: "Иванов Иван",
+		subtitle: "Основатель проекта",
+		tags: [],
+		img: asset("/creator1.jpg"),
+		text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laudantium fuga accusantium et hic! Architecto ipsam laborum doloribus dolorum numquam ut magnam commodi fuga dolores, ducimus sapiente, labore, minima cupiditate natus!",
+		projects: [],
+	},
+	{
+		id: "lu",
+		name: "Лю Цунсы",
+		subtitle: "Главный идеолог",
+		tags: [],
+		img: asset("/creator2.jpg"),
+		text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laudantium fuga accusantium et hic! Architecto ipsam laborum doloribus dolorum numquam ut magnam commodi fuga dolores, ducimus sapiente, labore, minima cupiditate natus!",
+		projects: [],
+	},
+	{
+		id: "petr",
+		name: "Пётр Алексеевич",
+		subtitle: "Щедрый спонсор",
+		tags: [],
+		img: asset("/creator3.jpg"),
+		text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laudantium fuga accusantium et hic! Architecto ipsam laborum doloribus dolorum numquam ut magnam commodi fuga dolores, ducimus sapiente, labore, minima cupiditate natus!",
+		projects: [],
+	},
+	{
+		id: "koval",
+		name: "София Коваль",
+		subtitle: "Искусствовед",
+		tags: [],
+		img: asset("/creator4.jpg"),
+		text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laudantium fuga accusantium et hic! Architecto ipsam laborum doloribus dolorum numquam ut magnam commodi fuga dolores, ducimus sapiente, labore, minima cupiditate natus!",
+		projects: [],
+	},
+]

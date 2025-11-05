@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from "$app/state";
 	import arrow from "$lib/arrow.svg";
-	import logo from "./logo.svg";
+	import logo from "$lib/logo.svg";
 	import Gallery from "./Gallery.svelte";
 	import { authors } from "$lib/data";
 

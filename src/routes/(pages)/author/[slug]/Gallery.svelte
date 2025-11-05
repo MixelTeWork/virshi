@@ -1,9 +1,8 @@
 <script lang="ts">
-	import { asset } from "$app/paths";
 	import arrowD from "./arrow.svg";
 	import arrow from "$lib/arrow.svg";
 	import type { IProject } from "$lib/data";
-	import Popup from "./Popup.svelte";
+	import Popup from "$lib/Popup/Popup.svelte";
 
 	interface Props {
 		projects: IProject[];
@@ -37,8 +36,12 @@
 	close={() => {
 		openedProject = -1;
 	}}
-	selectNext={() => openedProject = ((openedProject + 1) + projects.length) % projects.length}
-	selectPrev={() => openedProject = ((openedProject - 1) + projects.length) % projects.length}
+	selectNext={() => {
+		openedProject = (openedProject + 1 + projects.length) % projects.length;
+	}}
+	selectPrev={() => {
+		openedProject = (openedProject - 1 + projects.length) % projects.length;
+	}}
 />
 
 <div class="gallery" bind:this={galleryEl}>

@@ -5,8 +5,14 @@
 	import { trapFocus } from "$lib/trapFocus.svelte";
 	import { fade } from "svelte/transition";
 
+	interface Item {
+		name: string;
+		subtitle: string;
+		img: string;
+		text: string;
+	}
 	interface Props {
-		project: IProject | null;
+		project: Item | null;
 		close: () => void;
 		selectNext: () => void;
 		selectPrev: () => void;
