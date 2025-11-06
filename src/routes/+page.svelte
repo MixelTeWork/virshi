@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { onMount } from "svelte";
 	import { fade } from "svelte/transition";
-	import Footer from "./(pages)/Footer.svelte";
+	import Footer from "./Footer.svelte";
 	import { goto, preloadData } from "$app/navigation";
 	import { asset, resolve } from "$app/paths";
 	import { curLang, locale, lt, setLocale } from "$lib/ltext";
+    import { trapFocus } from "$lib/trapFocus.svelte";
 
 	let intro = $state(false);
 	let outro = $state(false);
@@ -31,7 +32,7 @@
 	<title>VERSHI</title>
 </svelte:head>
 
-<main out:fade={{ duration: 1000 }} class={{ intro, outro }} use:locale>
+<main out:fade={{ duration: 1000 }} class={{ intro, outro }} use:locale use:trapFocus>
 	<img src={asset("/intro_rails.png")} alt="rails" class="rails" />
 	<img src={asset("/intro_train.png")} alt="train" class="train" />
 	<img
@@ -74,6 +75,7 @@
 		inset: 0;
 		background: url(/intro_bg.jpg);
 		background-size: cover;
+		z-index: 999;
 	}
 
 	.rails,

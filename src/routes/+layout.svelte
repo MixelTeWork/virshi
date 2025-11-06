@@ -28,8 +28,11 @@
 
 	main {
 		overflow: auto;
+		display: flex;
+		flex-direction: column;
 	}
 	.content {
+		flex-grow: 1;
 		width: 100%;
 		max-width: 1600px;
 		margin: 0 auto;

@@ -1,10 +1,10 @@
 <script lang="ts">
-	import type { IProject, LText } from "$lib/types";
 	import cross from "./cross.svg";
 	import arrow from "./arrow_white.svg";
 	import { trapFocus } from "$lib/trapFocus.svelte";
 	import { fade } from "svelte/transition";
-    import { lto, lt } from "$lib/ltext";
+	import { lto, lt } from "$lib/ltext";
+	import type { LText } from "$lib";
 
 	interface Item {
 		name: LText;
@@ -45,7 +45,10 @@
 				<div class="header">
 					<div class="btns">
 						<button onclick={selectPrev}>
-							<img src={arrow} alt={$lt("предыдущее", "previous")} />
+							<img
+								src={arrow}
+								alt={$lt("предыдущее", "previous")}
+							/>
 						</button>
 						<button onclick={selectNext}>
 							<img src={arrow} alt={$lt("следующее", "next")} />
