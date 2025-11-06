@@ -1,9 +1,11 @@
 <script lang="ts">
 	import { resolve } from "$app/paths";
+	import type { LText } from "$lib";
 	import arrow from "$lib/arrow.svg";
-	import { authors, type LText } from "$lib/data";
-    import { lto, lt } from "$lib/ltext";
+	import { lto, lt } from "$lib/ltext";
 	import { fade } from "svelte/transition";
+
+	const { data } = $props();
 
 	interface ICard {
 		isEmpty: boolean;
@@ -13,7 +15,7 @@
 		img?: string;
 		url?: string;
 	}
-	const authorsCards = authors.map((author) => ({
+	const authorsCards = data.authors.map((author) => ({
 		isEmpty: false,
 		url: resolve(`/author/${author.id}`),
 		...author,
@@ -30,13 +32,12 @@
 		authorsCards[4],
 		authorsCards[5],
 		{ isEmpty: true },
-	];
+	].map((c) => (c ? c : { isEmpty: true }));
 </script>
 
 <svelte:head>
 	<title>{$lt("Авторы", "Authors")}</title>
 </svelte:head>
-
 <div class="grid" transition:fade={{ duration: 150 }}>
 	{#each cards as card}
 		<div class={["card", { empty: card.isEmpty }]}>
@@ -45,7 +46,9 @@
 			{:else}
 				<img src={card.img} alt={$lto(card.name)} />
 				<div class="card__content">
-					<a href={card.url}><img src={arrow} alt={$lt("перейти", "go to")} /></a>
+					<a href={card.url}
+						><img src={arrow} alt={$lt("перейти", "go to")} /></a
+					>
 					<div class="card__text">
 						<h2>{$lto(card.name)}</h2>
 						<h3>{$lto(card.subtitle)}</h3>

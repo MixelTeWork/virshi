@@ -1,15 +1,16 @@
 <script lang="ts">
 	import { asset } from "$app/paths";
 	import logo from "$lib/logo.svg";
-	import { creators } from "$lib/data";
 	import image from "./image.jpg";
 	import { fade } from "svelte/transition";
 	import Popup from "$lib/Popup/Popup.svelte";
 	import { scrolling } from "$lib/scrolling.svelte";
 	import { lt, lto } from "$lib/ltext";
 
+	const { data } = $props();
+
 	let selectedI = $state(-1);
-	const selected = $derived(creators[selectedI]);
+	const selected = $derived(data.creators[selectedI]);
 	let windowWidth = $state(0);
 </script>
 
@@ -25,10 +26,10 @@
 		selectedI = -1;
 	}}
 	selectNext={() => {
-		selectedI = (selectedI + 1 + creators.length) % creators.length;
+		selectedI = (selectedI + 1 + data.creators.length) % data.creators.length;
 	}}
 	selectPrev={() => {
-		selectedI = (selectedI - 1 + creators.length) % creators.length;
+		selectedI = (selectedI - 1 + data.creators.length) % data.creators.length;
 	}}
 />
 
@@ -59,7 +60,7 @@
 		>
 			<h2>{$lt("Создатели", "Creators")}</h2>
 			<div class="creators__items">
-				{#each creators as creator, i}
+				{#each data.creators as creator, i}
 					<button
 						class={[
 							"creator",

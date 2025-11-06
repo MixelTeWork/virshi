@@ -3,12 +3,13 @@
 	import arrow from "$lib/arrow.svg";
 	import logo from "$lib/logo.svg";
 	import Gallery from "./Gallery.svelte";
-	import { authors } from "$lib/data";
-    import { fade } from "svelte/transition";
-    import { lt, lto } from "$lib/ltext";
+	import { fade } from "svelte/transition";
+	import { lt, lto } from "$lib/ltext";
 
-	let slug = page.params.slug;
-	const author = authors.find((v) => v.id == slug);
+	const { data } = $props();
+
+	const slug = page.params.slug;
+	const author = data.authors.find((v) => v.id == slug);
 	let gallery: Gallery;
 </script>
 

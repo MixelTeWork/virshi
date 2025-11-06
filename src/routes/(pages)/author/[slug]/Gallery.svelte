@@ -1,7 +1,7 @@
 <script lang="ts">
 	import arrowD from "./arrow.svg";
 	import arrow from "$lib/arrow.svg";
-	import type { IProject } from "$lib/data";
+	import type { IProject } from "$lib/types";
 	import Popup from "$lib/Popup/Popup.svelte";
     import { lt, lto } from "$lib/ltext";
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { IProject, LText } from "$lib/data";
+	import type { IProject, LText } from "$lib/types";
 	import cross from "./cross.svg";
 	import arrow from "./arrow_white.svg";
 	import { trapFocus } from "$lib/trapFocus.svelte";
