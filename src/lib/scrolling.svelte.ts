@@ -1,16 +1,25 @@
-export function scrolling(node: HTMLElement, { speed = 1 })
+export function scrolling(node: HTMLElement, { speed = 1, delay = 500 })
 {
 	let scrolling = true;
 	let paused = false;
 	let x = 0;
 	let dx = 1;
-	function scroll()
+	let delayCur = 0;
+	let pt = 0;
+	function scroll(t: number)
 	{
-		if (!paused)
+		if (pt <= 0) pt = t;
+		const dt = t - pt;
+		pt = t;
+		if (delayCur > 0)
 		{
-			x += dx * speed;
-			if (dx > 0 && x > node.scrollWidth - node.offsetWidth) dx = -1;
-			if (dx < 0 && x < 0) dx = 1;
+			delayCur -= dt;
+		}
+		else if (!paused)
+		{
+			x += dx * speed * dt / 30;
+			if (dx > 0 && x > node.scrollWidth - node.offsetWidth) { dx = -1; delayCur = delay; }
+			if (dx < 0 && x < 0) { dx = 1; delayCur = delay; }
 			node.scrollTo(x, 0);
 		}
 		if (scrolling) requestAnimationFrame(scroll);
@@ -26,7 +35,7 @@ export function scrolling(node: HTMLElement, { speed = 1 })
 	}
 	$effect(() =>
 	{
-		scroll();
+		scroll(0);
 		node.addEventListener("mouseenter", onenter);
 		node.addEventListener("mouseleave", onleave);
 		node.addEventListener("touchstart", onenter);

@@ -1,5 +1,5 @@
+import type { LText } from "$lib";
 import { writable, derived } from "svelte/store"
-import type { LText } from "./types";
 
 type Locale = "ru" | "zh";
 let current = "ru" as Locale;
