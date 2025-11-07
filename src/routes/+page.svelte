@@ -75,6 +75,24 @@
 	</div>
 </main>
 
+<noscript>
+	<style>
+		.main {
+			opacity: 1 !important;
+		}
+		.footer {
+			transform: translateY(0%) !important;
+		}
+		.train,
+		.train_door {
+			translate: -50% 0% !important;
+		}
+		.langSwitch {
+			display: none !important;
+		}
+	</style>
+</noscript>
+
 <style>
 	main {
 		position: fixed;

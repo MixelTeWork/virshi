@@ -5,12 +5,14 @@
 
 	const {
 		txt,
+		user = { authed: false },
 	}: {
 		txt: {
 			authors: LText;
 			about: LText;
 			contact: LText;
 		};
+		user?: { authed: boolean };
 	} = $props();
 
 	let open = $state(false);
@@ -47,6 +49,9 @@
 			<a href={resolve("/contact")} onclick={close}>
 				{$lto(txt.contact)}
 			</a>
+			{#if user.authed}
+				<a href={resolve("/adm")} onclick={close}>Админка</a>
+			{/if}
 		</nav>
 		<div class="langSwitch">
 			<button
@@ -57,8 +62,20 @@
 				class={{ active: $curLang == "zh" }}
 				onclick={() => setLocale("zh")}>zh</button
 			>
+			{#if user.authed}
+				<a href={resolve("/adm/logout")} class="active">Выйти</a>
+			{/if}
 		</div>
 	</div>
+	<noscript>
+		<style>
+			.langSwitch {
+				opacity: 0 !important;
+				user-select: none !important;
+				pointer-events: none !important;
+			}
+		</style>
+	</noscript>
 </header>
 
 <style>
@@ -122,11 +139,11 @@
 	.langSwitch {
 		display: flex;
 	}
-	.langSwitch button {
+	.langSwitch * {
 		padding: 0.25rem;
 		opacity: 0.5;
 	}
-	.langSwitch button.active {
+	.langSwitch *.active {
 		opacity: 1;
 	}
 

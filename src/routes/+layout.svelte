@@ -7,7 +7,7 @@
 </script>
 
 <div class="layout" use:locale>
-	<Header txt={data.txt.header} />
+	<Header txt={data.txt.header} user={data.user} />
 
 	<main>
 		<div class="content">

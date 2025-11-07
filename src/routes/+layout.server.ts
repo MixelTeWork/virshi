@@ -1,6 +1,6 @@
 import { getData } from "$lib/server/database";
 
-export async function load()
+export async function load({ locals })
 {
-	return await getData();
+	return { ...await getData(), user: locals.user };
 }

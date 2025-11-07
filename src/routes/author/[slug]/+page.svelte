@@ -5,7 +5,7 @@
 	import Gallery from "./Gallery.svelte";
 	import { fade } from "svelte/transition";
 	import { lt, lto } from "$lib/ltext";
-    import { resolve } from "$app/paths";
+	import { resolve } from "$app/paths";
 
 	const { data } = $props();
 
@@ -29,7 +29,10 @@
 			</div>
 		</div>
 		<div class="img">
-			<img src={resolve(`/data/${author?.img}`)} alt={$lto(author?.name)} />
+			<img
+				src={resolve(`/data/${author?.img}`)}
+				alt={$lto(author?.name)}
+			/>
 		</div>
 		<div class="content">
 			<h1 class="title">{$lto(author?.name)}</h1>
@@ -57,7 +60,10 @@
 				<div class="gallery__imgs">
 					{#each author?.projects as proj, i}
 						<button onclick={() => gallery.select(i)}>
-							<img src={resolve(`/data/${proj.img}`)} alt={$lto(proj.name)} />
+							<img
+								src={resolve(`/data/${proj.img}`)}
+								alt={$lto(proj.name)}
+							/>
 						</button>
 					{/each}
 				</div>
@@ -68,6 +74,7 @@
 		bind:this={gallery}
 		projects={author?.projects || []}
 		title={data.txt.author.gallery}
+		readmore={data.txt.author.readmore}
 	/>
 </div>
 

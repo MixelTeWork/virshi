@@ -1,57 +1,12 @@
 import fs from "node:fs";
-import type { IAuthor, IProject, LText } from "$lib";
+import type { Data, IProject } from "$lib/types";
 
 export const dataPath = "data/";
 const dbPath = dataPath + "data.json";
-interface Data
-{
-	authors: IAuthor[],
-	creators: IAuthor[],
-	txt: {
-		header: {
-			authors: LText,
-			about: LText,
-			contact: LText,
-		},
-		footer: {
-			arrival: LText,
-			city: LText,
-			date: string,
-			time: string,
-		},
-		contacts: {
-			title: LText,
-			text: LText,
-			mail: { title: LText, value: string },
-			phone: { title: LText, value: string },
-			address: { title: LText, value: LText },
-			map: string,
-		},
-		authors: {
-			title: LText,
-		},
-		author: {
-			title: LText,
-			bio: LText,
-			gallery: LText,
-		},
-		about: {
-			title: LText,
-			text: LText,
-			creators: LText,
-			sponsors: LText,
-			sponsorImgs: string[],
-			backImg: string,
-		},
-	}
-}
 
 let data: Data | null = null;
 
-
-export const getData = async () => await loadData();
-
-async function loadData()
+export async function getData()
 {
 	if (data) return data;
 	return new Promise<Data>((res, rej) =>
@@ -63,6 +18,12 @@ async function loadData()
 			res(data!);
 		});
 	});
+}
+
+export async function editData(fn: (data: Data) => void)
+{
+	fn(await getData());
+	saveData();
 }
 
 let saveTimeout: NodeJS.Timeout | null = null;
@@ -145,6 +106,7 @@ const initial: Data = {
 			title: { ru: "Автор", zh: "Author" },
 			bio: { ru: "Биография", zh: "Biography" },
 			gallery: { ru: "Галерея", zh: "Gallery" },
+			readmore: { ru: "Читать больше", zh: "Read more" },
 		},
 		about: {
 			title: { ru: "О проекте", zh: "About proj" },
@@ -157,7 +119,7 @@ const initial: Data = {
 	},
 	authors: [
 		{
-			id: "li",
+			id: "1",
 			name: { ru: "Ли Цюнсы", zh: "Li Qiongsi" },
 			subtitle: { ru: "Иммерсивный творец", zh: "Immersive Creator" },
 			tags: [{ ru: "Спикер Брикс 2025", zh: "Brics Speaker 2025" }, { ru: "Художник", zh: "Artist" }, { ru: "Иммерсивный творец", zh: "Immersive Creator" }],
@@ -166,7 +128,7 @@ const initial: Data = {
 			projects: _projects,
 		},
 		{
-			id: "ivan",
+			id: "2",
 			name: { ru: "Иванов Иван", zh: "Ivan Ivanov" },
 			subtitle: { ru: "Красноречивый оратор", zh: "Eloquent speaker" },
 			tags: [{ ru: "Лорем ипсум", zh: "Lorem ipsum" }, { ru: "долор сит", zh: "dolor sit" }, { ru: "Красноречивый оратор", zh: "Eloquent speaker" }],
@@ -175,7 +137,7 @@ const initial: Data = {
 			projects: _projects,
 		},
 		{
-			id: "sofia",
+			id: "3",
 			name: { ru: "София Марченко", zh: "Sofia Marchenko" },
 			subtitle: { ru: "Цифровой художник", zh: "Digital Artist" },
 			tags: [{ ru: "Лорем ипсум", zh: "Lorem ipsum" }, { ru: "долор сит", zh: "dolor sit" }, { ru: "Цифровой художник", zh: "Digital Artist" }],
@@ -184,7 +146,7 @@ const initial: Data = {
 			projects: _projects,
 		},
 		{
-			id: "petrov",
+			id: "4",
 			name: { ru: "Алексей Петров", zh: "Alexey Petrov" },
 			subtitle: { ru: "Архитектор виртуальности", zh: "Architect of Virtuality" },
 			tags: [{ ru: "Лорем ипсум", zh: "Lorem ipsum" }, { ru: "долор сит", zh: "dolor sit" }, { ru: "Архитектор виртуальности", zh: "Architect of Virtuality" }],
@@ -193,7 +155,7 @@ const initial: Data = {
 			projects: _projects,
 		},
 		{
-			id: "tomas",
+			id: "5",
 			name: { ru: "Томас Андерссон", zh: "Thomas Andersson" },
 			subtitle: { ru: "Саунд-продюсер", zh: "Sound producer" },
 			tags: [{ ru: "Лорем ипсум", zh: "Lorem ipsum" }, { ru: "долор сит", zh: "dolor sit" }, { ru: "Саунд-продюсер", zh: "Sound producer" }],
@@ -202,7 +164,7 @@ const initial: Data = {
 			projects: _projects,
 		},
 		{
-			id: "anna",
+			id: "6",
 			name: { ru: "Анна Коваль", zh: "Anna Koval" },
 			subtitle: { ru: "Сценограф-постановщик", zh: "Set designer" },
 			tags: [{ ru: "Лорем ипсум", zh: "Lorem ipsum" }, { ru: "долор сит", zh: "dolor sit" }, { ru: "Сценограф-постановщик", zh: "Set designer" }],
@@ -213,7 +175,7 @@ const initial: Data = {
 	],
 	creators: [
 		{
-			id: "ivan",
+			id: "1",
 			name: { ru: "Иванов Иван", zh: "Ivan Ivanov" },
 			subtitle: { ru: "Основатель проекта", zh: "Founder of the project" },
 			tags: [],
@@ -222,7 +184,7 @@ const initial: Data = {
 			projects: [],
 		},
 		{
-			id: "lu",
+			id: "2",
 			name: { ru: "Лю Сун цы", zh: "Liu Song ci" },
 			subtitle: { ru: "Главный идеолог", zh: "Main ideologist" },
 			tags: [],
@@ -231,7 +193,7 @@ const initial: Data = {
 			projects: [],
 		},
 		{
-			id: "petr",
+			id: "3",
 			name: { ru: "Пётр Алексеевич", zh: "Peter Alekseevich" },
 			subtitle: { ru: "Щедрый спонсор", zh: "Generous sponsor" },
 			tags: [],
@@ -240,7 +202,7 @@ const initial: Data = {
 			projects: [],
 		},
 		{
-			id: "koval",
+			id: "4",
 			name: { ru: "София Коваль", zh: "Sofia Koval" },
 			subtitle: { ru: "Искусствовед", zh: "Art historian" },
 			tags: [],

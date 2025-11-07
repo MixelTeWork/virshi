@@ -9,8 +9,9 @@
 	interface Props {
 		projects: IProject[];
 		title: LText;
+		readmore: LText;
 	}
-	const { projects, title }: Props = $props();
+	const { projects, title, readmore }: Props = $props();
 	const cards = $state([] as HTMLElement[]);
 	let galleryEl: HTMLElement;
 	let selected = $state(0);
@@ -91,7 +92,7 @@
 							openedProject = i;
 						}}
 					>
-						<span>{$lt("Читать больше", "Read more")}</span>
+						<span>{$lto(readmore)}</span>
 						<img src={arrowD} alt="" />
 					</button>
 				</div>

@@ -9,7 +9,7 @@ export const lt = derived([lang], () =>
 	(ru: string, zh: string) => current == "zh" ? zh : ru
 );
 export const lto = derived([lang], () =>
-	(o: LText | null | undefined) => current == "zh" ? o?.zh : o?.ru
+	(o: LText | null | undefined) => (current == "zh" ? o?.zh : o?.ru) || ""
 );
 export const curLang = derived([lang], () => current);
 

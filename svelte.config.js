@@ -13,6 +13,9 @@ const config = {
 			precompress: true,
 			envPrefix: '',
 		}),
+		experimental: {
+			remoteFunctions: true,
+		},
 	}
 };
 
