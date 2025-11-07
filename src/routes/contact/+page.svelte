@@ -1,41 +1,39 @@
 <script lang="ts">
 	import { fade } from "svelte/transition";
-	import map from "./map.jpg";
-	import { lt } from "$lib/ltext";
+	import { lt, lto } from "$lib/ltext";
+	import { resolve } from "$app/paths";
+	const { data } = $props();
 </script>
 
 <svelte:head>
-	<title>{$lt("Контакты", "Contacts")}</title>
+	<title>{$lto(data.txt.contacts.title)}</title>
 </svelte:head>
 
 <div class="page" transition:fade={{ duration: 150 }}>
 	<div class="content">
 		<div>
-			<h1>{$lt("Контакты", "Contacts")}</h1>
-			<p>
-				{$lt(
-					"Лорем ипсум долор сит амет, ад сед яуем вирис сплендиде. Сит ребум ириуре цонцлудатуряуе еи, пертинах интеллегам еум еа. Цаусае вивендум ад цум, аццумсан репрехендунт хас не, иллум индоцтум сеа но.",
-					"Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eveniet assumenda impedit quae, vero eum minima quasi quis saepe veniam sapiente pariatur accusantium tempore. Repudiandae error, possimus architecto enim corporis optio?",
-				)}
-			</p>
-			<p>
-				{$lt(
-					"Иус ех идяуе темпорибус, хас цу нострум маиестатис, симул персиус вис те. Торяуатос цомпрехенсам не еос. Хис ат меис десеруиссе, нумяуам темпорибус меи еа, детрацто делецтус сингулис ан яуо. Оптион регионе лаборес иус но.",
-					"Lorem ipsum dolor sit amet consectetur adipisicing elit. Maiores, illum. Incidunt placeat quaerat quas beatae blanditiis excepturi cum, ad esse, assumenda saepe sunt similique eveniet tempora. Reiciendis inventore iure corporis.",
-				)}
-			</p>
+			<h1>{$lto(data.txt.contacts.title)}</h1>
+			{#each $lto(data.txt.contacts.text)?.split?.("\n") as p}
+				<p>{p}</p>
+			{/each}
 		</div>
 		<div class="items">
-			{@render item($lt("Почта", "Mail"), "mail@domen.ru")}
-			{@render item($lt("Телефон", "Phone"), "+7 (499) 343-33-32")}
 			{@render item(
-				$lt("Адрес", "Address"),
-				$lt("г. Москва, проспект Вернадского, д. 76", "76 Vernadsky Avenue, Moscow"),
+				$lto(data.txt.contacts.mail.title),
+				data.txt.contacts.mail.value,
+			)}
+			{@render item(
+				$lto(data.txt.contacts.phone.title),
+				data.txt.contacts.phone.value,
+			)}
+			{@render item(
+				$lto(data.txt.contacts.address.title),
+				$lto(data.txt.contacts.address.value),
 			)}
 		</div>
 	</div>
 	<div class="map">
-		<img src={map} alt={$lt("Карта", "Map")} />
+		<img src={resolve(`/data/${data.txt.contacts.map}`)} alt={$lt("Карта", "Map")} />
 	</div>
 </div>
 

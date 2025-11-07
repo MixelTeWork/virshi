@@ -1,17 +1,28 @@
-<script>
-    import { lt } from "$lib/ltext";
-
+<script lang="ts">
+	import type { LText } from "$lib";
+	import { lto } from "$lib/ltext";
+	const {
+		txt,
+	}: {
+		txt: {
+			arrival: LText;
+			city: LText;
+			date: string;
+			time: string;
+		};
+	} = $props();
 </script>
+
 <footer>
 	<div class="marquee">
 		{#each { length: 5 }}
-			<span>{$lt("Прибытие поезда «вирши»", "Arrival of the train «Virshi»")}</span>
+			<span>{$lto(txt.arrival)}</span>
 			<span class="vsep"></span>
-			<span>{$lt("г. москва", "Moscow")}</span>
+			<span>{$lto(txt.city)}</span>
 			<span class="vsep"></span>
-			<span>28.12.2025</span>
+			<span>{txt.date}</span>
 			<span class="vsep"></span>
-			<span>10:00 — 21:00</span>
+			<span>{txt.time}</span>
 			<span class="hsep"></span>
 		{/each}
 	</div>

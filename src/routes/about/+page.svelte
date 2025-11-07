@@ -1,11 +1,10 @@
 <script lang="ts">
-	import { asset } from "$app/paths";
+	import { resolve } from "$app/paths";
 	import logo from "$lib/logo.svg";
-	import image from "./image.jpg";
 	import { fade } from "svelte/transition";
 	import Popup from "$lib/Popup/Popup.svelte";
 	import { scrolling } from "$lib/scrolling.svelte";
-	import { lt, lto } from "$lib/ltext";
+	import { lto } from "$lib/ltext";
 
 	const { data } = $props();
 
@@ -17,38 +16,31 @@
 <svelte:window bind:innerWidth={windowWidth} />
 
 <svelte:head>
-	<title>{$lt("О проекте", "About project")}</title>
+	<title>{$lto(data.txt.about.title)}</title>
 </svelte:head>
 
 <Popup
-	project={windowWidth < 900 ? selected : null}
+	item={windowWidth < 900 ? selected : null}
 	close={() => {
 		selectedI = -1;
 	}}
 	selectNext={() => {
-		selectedI = (selectedI + 1 + data.creators.length) % data.creators.length;
+		selectedI =
+			(selectedI + 1 + data.creators.length) % data.creators.length;
 	}}
 	selectPrev={() => {
-		selectedI = (selectedI - 1 + data.creators.length) % data.creators.length;
+		selectedI =
+			(selectedI - 1 + data.creators.length) % data.creators.length;
 	}}
 />
 
 <div class="page" transition:fade={{ duration: 150 }}>
 	<div class="content">
 		<div>
-			<h1>{$lt("О проекте", "About proj")}</h1>
-			<p>
-				{$lt(
-					"Лорем ипсум долор сит амет, ад сед яуем вирис сплендиде. Сит ребум ириуре цонцлудатуряуе еи, пертинах интеллегам еум еа. Цаусае вивендум ад цум, аццумсан репрехендунт хас не, иллум индоцтум сеа но.",
-					"Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eveniet assumenda impedit quae, vero eum minima quasi quis saepe veniam sapiente pariatur accusantium tempore. Repudiandae error, possimus architecto enim corporis optio?",
-				)}
-			</p>
-			<p>
-				{$lt(
-					"Иус ех идяуе темпорибус, хас цу нострум маиестатис, симул персиус вис те. Торяуатос цомпрехенсам не еос. Хис ат меис десеруиссе, нумяуам темпорибус меи еа, детрацто делецтус сингулис ан яуо. Оптион регионе лаборес иус но.",
-					"Lorem ipsum dolor sit amet consectetur adipisicing elit. Maiores, illum. Incidunt placeat quaerat quas beatae blanditiis excepturi cum, ad esse, assumenda saepe sunt similique eveniet tempora. Reiciendis inventore iure corporis.",
-				)}
-			</p>
+			<h1>{$lto(data.txt.about.title)}</h1>
+			{#each $lto(data.txt.about.text)?.split?.("\n") as p}
+				<p>{p}</p>
+			{/each}
 		</div>
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<div
@@ -58,7 +50,7 @@
 				selectedI = -1;
 			}}
 		>
-			<h2>{$lt("Создатели", "Creators")}</h2>
+			<h2>{$lto(data.txt.about.creators)}</h2>
 			<div class="creators__items">
 				{#each data.creators as creator, i}
 					<button
@@ -74,18 +66,17 @@
 							selectedI = i;
 						}}
 					>
-						<img src={creator.img} alt={$lto(creator.name)} />
+						<img src={resolve(`/data/${creator.img}`)} alt={$lto(creator.name)} />
 					</button>
 				{/each}
 			</div>
 		</div>
 		<div class="sponsors">
-			<h2>{$lt("Спонсоры", "Sponsors")}</h2>
+			<h2>{$lto(data.txt.about.sponsors)}</h2>
 			<div class="sponsors__items" use:scrolling={{ speed: 2 }}>
-				<img src={asset("/sponsor.png")} alt="Спонсор 1" />
-				<img src={asset("/sponsor.png")} alt="Спонсор 2" />
-				<img src={asset("/sponsor.png")} alt="Спонсор 3" />
-				<img src={asset("/sponsor.png")} alt="Спонсор 4" />
+				{#each data.txt.about.sponsorImgs as img}
+					<img src={resolve(`/data/${img}`)} alt="Sponsor" />
+				{/each}
 			</div>
 		</div>
 	</div>
@@ -93,11 +84,15 @@
 		<div class="logo">
 			<img src={logo} alt="" />
 		</div>
-		<img src={image} alt="" class="img__bg" />
+		<img
+			src={resolve(`/data/${data.txt.about.backImg}`)}
+			alt=""
+			class="img__bg"
+		/>
 		{#if selected}
 			<img
 				transition:fade={{ duration: 250 }}
-				src={selected.img}
+				src={resolve(`/data/${selected.img}`)}
 				alt={$lto(selected.name)}
 				class="img__creator"
 			/>

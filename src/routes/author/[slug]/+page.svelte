@@ -5,6 +5,7 @@
 	import Gallery from "./Gallery.svelte";
 	import { fade } from "svelte/transition";
 	import { lt, lto } from "$lib/ltext";
+    import { resolve } from "$app/paths";
 
 	const { data } = $props();
 
@@ -14,7 +15,7 @@
 </script>
 
 <svelte:head>
-	<title>{$lt("Автор", "Author")} - {$lto(author?.name)}</title>
+	<title>{$lto(data.txt.author.title)} - {$lto(author?.name)}</title>
 </svelte:head>
 
 <div class="page" transition:fade={{ duration: 150 }}>
@@ -22,13 +23,13 @@
 		<img src={logo} alt="" class="logo" />
 		<div class="breadcrumbs">
 			<div>
-				<span>{$lt("Авторы", "Authors")}</span>
+				<span>{$lto(data.txt.authors.title)}</span>
 				<span class="hline"></span>
 				<span>{$lto(author?.name)}</span>
 			</div>
 		</div>
 		<div class="img">
-			<img src={author?.img} alt={$lto(author?.name)} />
+			<img src={resolve(`/data/${author?.img}`)} alt={$lto(author?.name)} />
 		</div>
 		<div class="content">
 			<h1 class="title">{$lto(author?.name)}</h1>
@@ -38,14 +39,14 @@
 				{/each}
 			</div>
 			<div class="bio">
-				<h2>{$lt("Биография", "Biography")}</h2>
+				<h2>{$lto(data.txt.author.bio)}</h2>
 				{#each $lto(author?.text)?.split?.("\n") as p}
 					<p>{p}</p>
 				{/each}
 			</div>
 			<div class="gallery">
 				<div class="gallery__title">
-					<h2>{$lt("Галерея", "Gallery")}</h2>
+					<h2>{$lto(data.txt.author.gallery)}</h2>
 					<button
 						aria-label={$lt("к галерее", "to gallery")}
 						onclick={() => gallery.scrollIntoView()}
@@ -56,14 +57,18 @@
 				<div class="gallery__imgs">
 					{#each author?.projects as proj, i}
 						<button onclick={() => gallery.select(i)}>
-							<img src={proj.img} alt={$lto(proj.name)} />
+							<img src={resolve(`/data/${proj.img}`)} alt={$lto(proj.name)} />
 						</button>
 					{/each}
 				</div>
 			</div>
 		</div>
 	</div>
-	<Gallery bind:this={gallery} projects={author?.projects || []} />
+	<Gallery
+		bind:this={gallery}
+		projects={author?.projects || []}
+		title={data.txt.author.gallery}
+	/>
 </div>
 
 <style>

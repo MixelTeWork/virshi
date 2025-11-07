@@ -4,9 +4,10 @@
 	import Footer from "./Footer.svelte";
 	import { goto, preloadData } from "$app/navigation";
 	import { asset, resolve } from "$app/paths";
-	import { curLang, locale, lt, setLocale } from "$lib/ltext";
-    import { trapFocus } from "$lib/trapFocus.svelte";
+	import { curLang, locale, setLocale, lto } from "$lib/ltext";
+	import { trapFocus } from "$lib/trapFocus.svelte";
 
+	const { data } = $props();
 	let intro = $state(false);
 	let outro = $state(false);
 
@@ -32,7 +33,12 @@
 	<title>VERSHI</title>
 </svelte:head>
 
-<main out:fade={{ duration: 1000 }} class={{ intro, outro }} use:locale use:trapFocus>
+<main
+	out:fade={{ duration: 1000 }}
+	class={{ intro, outro }}
+	use:locale
+	use:trapFocus
+>
 	<img src={asset("/intro_rails.png")} alt="rails" class="rails" />
 	<img src={asset("/intro_train.png")} alt="train" class="train" />
 	<img
@@ -44,13 +50,13 @@
 		<img src={asset("/logo_white.svg")} alt="logo" />
 		<div class="links">
 			<a href={resolve("/authors")} onclick={go}>
-				{$lt("Авторы", "Authors")}
+				{$lto(data.txt.header.authors)}
 			</a>
 			<a href={resolve("/about")} onclick={go}>
-				{$lt("О проекте", "About")}
+				{$lto(data.txt.header.about)}
 			</a>
 			<a href={resolve("/contact")} onclick={go}>
-				{$lt("Контакты", "Contact")}
+				{$lto(data.txt.header.contact)}
 			</a>
 			<div class="langSwitch">
 				<button
@@ -65,7 +71,7 @@
 		</div>
 	</div>
 	<div class="footer">
-		<Footer />
+		<Footer txt={data.txt.footer} />
 	</div>
 </main>
 

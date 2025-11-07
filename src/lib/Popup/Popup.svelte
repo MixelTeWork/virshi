@@ -5,6 +5,7 @@
 	import { fade } from "svelte/transition";
 	import { lto, lt } from "$lib/ltext";
 	import type { LText } from "$lib";
+	import { resolve } from "$app/paths";
 
 	interface Item {
 		name: LText;
@@ -13,15 +14,15 @@
 		text: LText;
 	}
 	interface Props {
-		project: Item | null;
+		item: Item | null;
 		close: () => void;
 		selectNext: () => void;
 		selectPrev: () => void;
 	}
-	let { project, close, selectNext, selectPrev }: Props = $props();
+	let { item, close, selectNext, selectPrev }: Props = $props();
 </script>
 
-{#if project}
+{#if item}
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div
@@ -33,11 +34,11 @@
 		}}
 	>
 		<div class="container">
-			{#key project}
+			{#key item}
 				<img
 					class="img"
-					src={project.img}
-					alt={$lto(project.name)}
+					src={resolve(`/data/${item.img}`)}
+					alt={$lto(item.name)}
 					transition:fade={{ duration: 250 }}
 				/>
 			{/key}
@@ -59,9 +60,9 @@
 					</button>
 				</div>
 				<div class="body">
-					<h2>{$lto(project.name)}</h2>
-					<h3>{$lto(project.subtitle)}</h3>
-					<p>{$lto(project.text)}</p>
+					<h2>{$lto(item.name)}</h2>
+					<h3>{$lto(item.subtitle)}</h3>
+					<p>{$lto(item.text)}</p>
 				</div>
 			</div>
 		</div>

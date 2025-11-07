@@ -36,7 +36,7 @@
 </script>
 
 <svelte:head>
-	<title>{$lt("Авторы", "Authors")}</title>
+	<title>{$lto(data.txt.authors.title)}</title>
 </svelte:head>
 <div class="grid" transition:fade={{ duration: 150 }}>
 	{#each cards as card}
@@ -44,7 +44,7 @@
 			{#if card.isEmpty}
 				<div class="cross"></div>
 			{:else}
-				<img src={card.img} alt={$lto(card.name)} />
+				<img src={resolve(`/data/${card.img}`)} alt={$lto(card.name)} />
 				<div class="card__content">
 					<a href={card.url}
 						><img src={arrow} alt={$lt("перейти", "go to")} /></a

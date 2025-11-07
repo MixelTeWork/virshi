@@ -3,11 +3,11 @@
 	import Footer from "./Footer.svelte";
 	import Header from "./Header.svelte";
 
-	let { children } = $props();
+	const { data, children } = $props();
 </script>
 
 <div class="layout" use:locale>
-	<Header />
+	<Header txt={data.txt.header} />
 
 	<main>
 		<div class="content">
@@ -15,7 +15,7 @@
 		</div>
 	</main>
 
-	<Footer />
+	<Footer txt={data.txt.footer} />
 </div>
 
 <style>

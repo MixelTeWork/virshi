@@ -1,19 +1,55 @@
 import fs from "node:fs";
-import { asset } from "$app/paths";
-import type { IAuthor, IProject } from "$lib";
+import type { IAuthor, IProject, LText } from "$lib";
 
-const dbPath = "data.json";
+export const dataPath = "data/";
+const dbPath = dataPath + "data.json";
 interface Data
 {
 	authors: IAuthor[],
 	creators: IAuthor[],
+	txt: {
+		header: {
+			authors: LText,
+			about: LText,
+			contact: LText,
+		},
+		footer: {
+			arrival: LText,
+			city: LText,
+			date: string,
+			time: string,
+		},
+		contacts: {
+			title: LText,
+			text: LText,
+			mail: { title: LText, value: string },
+			phone: { title: LText, value: string },
+			address: { title: LText, value: LText },
+			map: string,
+		},
+		authors: {
+			title: LText,
+		},
+		author: {
+			title: LText,
+			bio: LText,
+			gallery: LText,
+		},
+		about: {
+			title: LText,
+			text: LText,
+			creators: LText,
+			sponsors: LText,
+			sponsorImgs: string[],
+			backImg: string,
+		},
+	}
 }
 
 let data: Data | null = null;
 
 
-export const getAuthors = async () => (await loadData()).authors;
-export const getCreators = async () => (await loadData()).creators;
+export const getData = async () => await loadData();
 
 async function loadData()
 {
@@ -26,7 +62,28 @@ async function loadData()
 			data = JSON.parse(json);
 			res(data!);
 		});
-	})
+	});
+}
+
+let saveTimeout: NodeJS.Timeout | null = null;
+let saving = false;
+function saveData(retries = 3)
+{
+	if (!data || saveTimeout) return;
+	saveTimeout = setTimeout(() =>
+	{
+		if (saving) return saveData(retries);
+		saveTimeout = null;
+		saving = true;
+		console.log("write data");
+		fs.writeFile(dbPath, JSON.stringify(data), "utf8", (err) =>
+		{
+			saving = false;
+			if (!err) return;
+			if (retries > 0) saveData(retries - 1);
+			else console.error(err);
+		});
+	}, 500);
 }
 
 
@@ -35,39 +92,76 @@ const _projects: IProject[] = [
 		id: "1",
 		name: { ru: "Проект 1", zh: "Project 1" },
 		subtitle: { ru: "Цифровое пространство · 2025", zh: "Digital space · 2025" },
-		img: asset("/project1.jpg"),
+		img: "project1.jpg",
 		text: { ru: "Лорем ипсум долор сит амет, ад сед яуем вирис сплендиде. Сит ребум ириуре цонцлудатуряуе еи, пертинах интеллегам еум еа. Цаусае вивендум ад цум, аццумсан репрехендунт хас не, иллум индоцтум сеа но.", zh: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laudantium fuga accusantium et hic! Architecto ipsam laborum doloribus dolorum numquam ut magnam commodi fuga dolores, ducimus sapiente, labore, minima cupiditate natus!" },
 	},
 	{
 		id: "2",
 		name: { ru: "Проект 2", zh: "Project 2" },
 		subtitle: { ru: "Цифровое пространство · 2025", zh: "Digital space · 2025" },
-		img: asset("/project2.jpg"),
+		img: "project2.jpg",
 		text: { ru: "Лорем ипсум долор сит амет, ад сед яуем вирис сплендиде. Сит ребум ириуре цонцлудатуряуе еи, пертинах интеллегам еум еа. Цаусае вивендум ад цум, аццумсан репрехендунт хас не, иллум индоцтум сеа но.", zh: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laudantium fuga accusantium et hic! Architecto ipsam laborum doloribus dolorum numquam ut magnam commodi fuga dolores, ducimus sapiente, labore, minima cupiditate natus!" },
 	},
 	{
 		id: "3",
 		name: { ru: "Проект 3", zh: "Project 3" },
 		subtitle: { ru: "Цифровое пространство · 2025", zh: "Digital space · 2025" },
-		img: asset("/project3.jpg"),
+		img: "project3.jpg",
 		text: { ru: "Лорем ипсум долор сит амет, ад сед яуем вирис сплендиде. Сит ребум ириуре цонцлудатуряуе еи, пертинах интеллегам еум еа. Цаусае вивендум ад цум, аццумсан репрехендунт хас не, иллум индоцтум сеа но.", zh: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laudantium fuga accusantium et hic! Architecto ipsam laborum doloribus dolorum numquam ut magnam commodi fuga dolores, ducimus sapiente, labore, minima cupiditate natus!" },
 	},
 	{
 		id: "4",
 		name: { ru: "Проект 4", zh: "Project 4" },
 		subtitle: { ru: "Цифровое пространство · 2025", zh: "Digital space · 2025" },
-		img: asset("/project4.jpg"),
+		img: "project4.jpg",
 		text: { ru: "Лорем ипсум долор сит амет, ад сед яуем вирис сплендиде. Сит ребум ириуре цонцлудатуряуе еи, пертинах интеллегам еум еа. Цаусае вивендум ад цум, аццумсан репрехендунт хас не, иллум индоцтум сеа но.", zh: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laudantium fuga accusantium et hic! Architecto ipsam laborum doloribus dolorum numquam ut magnam commodi fuga dolores, ducimus sapiente, labore, minima cupiditate natus!" },
 	},
 ];
 const initial: Data = {
+	txt: {
+		header: {
+			authors: { ru: "Авторы", zh: "Authors" },
+			about: { ru: "О проекте", zh: "About project" },
+			contact: { ru: "Контакты", zh: "Contacts" },
+		},
+		footer: {
+			arrival: { ru: "Прибытие поезда «вирши»", zh: "Arrival of the train «Virshi»" },
+			city: { ru: "г. москва", zh: "Moscow" },
+			date: "28.12.2025",
+			time: "10:00 — 21:00",
+		},
+		contacts: {
+			title: { ru: "Контакты", zh: "Contacts" },
+			text: { ru: "Лорем ипсум долор сит амет, ад сед яуем вирис сплендиде. Сит ребум ириуре цонцлудатуряуе еи, пертинах интеллегам еум еа. Цаусае вивендум ад цум, аццумсан репрехендунт хас не, иллум индоцтум сеа но.\nИус ех идяуе темпорибус, хас цу нострум маиестатис, симул персиус вис те. Торяуатос цомпрехенсам не еос. Хис ат меис десеруиссе, нумяуам темпорибус меи еа, детрацто делецтус сингулис ан яуо. Оптион регионе лаборес иус но.", zh: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eveniet assumenda impedit quae, vero eum minima quasi quis saepe veniam sapiente pariatur accusantium tempore. Repudiandae error, possimus architecto enim corporis optio?\nLorem ipsum dolor sit amet consectetur adipisicing elit. Maiores, illum. Incidunt placeat quaerat quas beatae blanditiis excepturi cum, ad esse, assumenda saepe sunt similique eveniet tempora. Reiciendis inventore iure corporis." },
+			mail: { title: { ru: "Почта", zh: "Mail" }, value: "mail@domen.ru" },
+			phone: { title: { ru: "Телефон", zh: "Phone" }, value: "+7 (499) 343-33-32" },
+			address: { title: { ru: "Адрес", zh: "Address" }, value: { ru: "г. Москва, проспект Вернадского, д. 76", zh: "76 Vernadsky Avenue, Moscow" } },
+			map: "map.jpg",
+		},
+		authors: {
+			title: { ru: "Авторы", zh: "Authors" },
+		},
+		author: {
+			title: { ru: "Автор", zh: "Author" },
+			bio: { ru: "Биография", zh: "Biography" },
+			gallery: { ru: "Галерея", zh: "Gallery" },
+		},
+		about: {
+			title: { ru: "О проекте", zh: "About proj" },
+			text: { ru: "Лорем ипсум долор сит амет, ад сед яуем вирис сплендиде. Сит ребум ириуре цонцлудатуряуе еи, пертинах интеллегам еум еа. Цаусае вивендум ад цум, аццумсан репрехендунт хас не, иллум индоцтум сеа но.\nИус ех идяуе темпорибус, хас цу нострум маиестатис, симул персиус вис те. Торяуатос цомпрехенсам не еос. Хис ат меис десеруиссе, нумяуам темпорибус меи еа, детрацто делецтус сингулис ан яуо. Оптион регионе лаборес иус но.", zh: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eveniet assumenda impedit quae, vero eum minima quasi quis saepe veniam sapiente pariatur accusantium tempore. Repudiandae error, possimus architecto enim corporis optio?\nLorem ipsum dolor sit amet consectetur adipisicing elit. Maiores, illum. Incidunt placeat quaerat quas beatae blanditiis excepturi cum, ad esse, assumenda saepe sunt similique eveniet tempora. Reiciendis inventore iure corporis." },
+			creators: { ru: "Создатели", zh: "Creators" },
+			sponsors: { ru: "Спонсоры", zh: "Sponsors" },
+			sponsorImgs: ["sponsor.png", "sponsor.png", "sponsor.png", "sponsor.png"],
+			backImg: "about_bg.jpg",
+		},
+	},
 	authors: [
 		{
 			id: "li",
 			name: { ru: "Ли Цюнсы", zh: "Li Qiongsi" },
 			subtitle: { ru: "Иммерсивный творец", zh: "Immersive Creator" },
 			tags: [{ ru: "Спикер Брикс 2025", zh: "Brics Speaker 2025" }, { ru: "Художник", zh: "Artist" }, { ru: "Иммерсивный творец", zh: "Immersive Creator" }],
-			img: asset("/author1.jpg"),
+			img: "author1.jpg",
 			text: { ru: "Лорем ипсум долор сит амет, ад сед яуем вирис сплендиде. Сит ребум ириуре цонцлудатуряуе еи, пертинах интеллегам еум еа. Цаусае вивендум ад цум, аццумсан репрехендунт хас не, иллум индоцтум сеа но.\nИус ех идяуе темпорибус, хас цу нострум маиестатис, симул персиус вис те. Торяуатос цомпрехенсам не еос. Хис ат меис десеруиссе, нумяуам темпорибус меи еа, детрацто делецтус сингулис ан яуо. Оптион регионе лаборес иус но.", zh: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laudantium fuga accusantium et hic! Architecto ipsam laborum doloribus dolorum numquam ut magnam commodi fuga dolores, ducimus sapiente, labore, minima cupiditate natus!\nLorem ipsum dolor, sit amet consectetur adipisicing elit. Recusandae ex natus quasi dolorem voluptate aspernatur illum nulla culpa molestiae fuga. Neque repudiandae ipsam voluptatem amet consectetur vel, harum ab architecto." },
 			projects: _projects,
 		},
@@ -76,7 +170,7 @@ const initial: Data = {
 			name: { ru: "Иванов Иван", zh: "Ivan Ivanov" },
 			subtitle: { ru: "Красноречивый оратор", zh: "Eloquent speaker" },
 			tags: [{ ru: "Лорем ипсум", zh: "Lorem ipsum" }, { ru: "долор сит", zh: "dolor sit" }, { ru: "Красноречивый оратор", zh: "Eloquent speaker" }],
-			img: asset("/author2.jpg"),
+			img: "author2.jpg",
 			text: { ru: "Лорем ипсум долор сит амет, ад сед яуем вирис сплендиде. Сит ребум ириуре цонцлудатуряуе еи, пертинах интеллегам еум еа. Цаусае вивендум ад цум, аццумсан репрехендунт хас не, иллум индоцтум сеа но.\nИус ех идяуе темпорибус, хас цу нострум маиестатис, симул персиус вис те. Торяуатос цомпрехенсам не еос. Хис ат меис десеруиссе, нумяуам темпорибус меи еа, детрацто делецтус сингулис ан яуо. Оптион регионе лаборес иус но.", zh: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laudantium fuga accusantium et hic! Architecto ipsam laborum doloribus dolorum numquam ut magnam commodi fuga dolores, ducimus sapiente, labore, minima cupiditate natus!\nLorem ipsum dolor, sit amet consectetur adipisicing elit. Recusandae ex natus quasi dolorem voluptate aspernatur illum nulla culpa molestiae fuga. Neque repudiandae ipsam voluptatem amet consectetur vel, harum ab architecto." },
 			projects: _projects,
 		},
@@ -85,7 +179,7 @@ const initial: Data = {
 			name: { ru: "София Марченко", zh: "Sofia Marchenko" },
 			subtitle: { ru: "Цифровой художник", zh: "Digital Artist" },
 			tags: [{ ru: "Лорем ипсум", zh: "Lorem ipsum" }, { ru: "долор сит", zh: "dolor sit" }, { ru: "Цифровой художник", zh: "Digital Artist" }],
-			img: asset("/author3.jpg"),
+			img: "author3.jpg",
 			text: { ru: "Лорем ипсум долор сит амет, ад сед яуем вирис сплендиде. Сит ребум ириуре цонцлудатуряуе еи, пертинах интеллегам еум еа. Цаусае вивендум ад цум, аццумсан репрехендунт хас не, иллум индоцтум сеа но.\nИус ех идяуе темпорибус, хас цу нострум маиестатис, симул персиус вис те. Торяуатос цомпрехенсам не еос. Хис ат меис десеруиссе, нумяуам темпорибус меи еа, детрацто делецтус сингулис ан яуо. Оптион регионе лаборес иус но.", zh: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laudantium fuga accusantium et hic! Architecto ipsam laborum doloribus dolorum numquam ut magnam commodi fuga dolores, ducimus sapiente, labore, minima cupiditate natus!\nLorem ipsum dolor, sit amet consectetur adipisicing elit. Recusandae ex natus quasi dolorem voluptate aspernatur illum nulla culpa molestiae fuga. Neque repudiandae ipsam voluptatem amet consectetur vel, harum ab architecto." },
 			projects: _projects,
 		},
@@ -94,7 +188,7 @@ const initial: Data = {
 			name: { ru: "Алексей Петров", zh: "Alexey Petrov" },
 			subtitle: { ru: "Архитектор виртуальности", zh: "Architect of Virtuality" },
 			tags: [{ ru: "Лорем ипсум", zh: "Lorem ipsum" }, { ru: "долор сит", zh: "dolor sit" }, { ru: "Архитектор виртуальности", zh: "Architect of Virtuality" }],
-			img: asset("/author4.jpg"),
+			img: "author4.jpg",
 			text: { ru: "Лорем ипсум долор сит амет, ад сед яуем вирис сплендиде. Сит ребум ириуре цонцлудатуряуе еи, пертинах интеллегам еум еа. Цаусае вивендум ад цум, аццумсан репрехендунт хас не, иллум индоцтум сеа но.\nИус ех идяуе темпорибус, хас цу нострум маиестатис, симул персиус вис те. Торяуатос цомпрехенсам не еос. Хис ат меис десеруиссе, нумяуам темпорибус меи еа, детрацто делецтус сингулис ан яуо. Оптион регионе лаборес иус но.", zh: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laudantium fuga accusantium et hic! Architecto ipsam laborum doloribus dolorum numquam ut magnam commodi fuga dolores, ducimus sapiente, labore, minima cupiditate natus!\nLorem ipsum dolor, sit amet consectetur adipisicing elit. Recusandae ex natus quasi dolorem voluptate aspernatur illum nulla culpa molestiae fuga. Neque repudiandae ipsam voluptatem amet consectetur vel, harum ab architecto." },
 			projects: _projects,
 		},
@@ -103,7 +197,7 @@ const initial: Data = {
 			name: { ru: "Томас Андерссон", zh: "Thomas Andersson" },
 			subtitle: { ru: "Саунд-продюсер", zh: "Sound producer" },
 			tags: [{ ru: "Лорем ипсум", zh: "Lorem ipsum" }, { ru: "долор сит", zh: "dolor sit" }, { ru: "Саунд-продюсер", zh: "Sound producer" }],
-			img: asset("/author5.jpg"),
+			img: "author5.jpg",
 			text: { ru: "Лорем ипсум долор сит амет, ад сед яуем вирис сплендиде. Сит ребум ириуре цонцлудатуряуе еи, пертинах интеллегам еум еа. Цаусае вивендум ад цум, аццумсан репрехендунт хас не, иллум индоцтум сеа но.\nИус ех идяуе темпорибус, хас цу нострум маиестатис, симул персиус вис те. Торяуатос цомпрехенсам не еос. Хис ат меис десеруиссе, нумяуам темпорибус меи еа, детрацто делецтус сингулис ан яуо. Оптион регионе лаборес иус но.", zh: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laudantium fuga accusantium et hic! Architecto ipsam laborum doloribus dolorum numquam ut magnam commodi fuga dolores, ducimus sapiente, labore, minima cupiditate natus!\nLorem ipsum dolor, sit amet consectetur adipisicing elit. Recusandae ex natus quasi dolorem voluptate aspernatur illum nulla culpa molestiae fuga. Neque repudiandae ipsam voluptatem amet consectetur vel, harum ab architecto." },
 			projects: _projects,
 		},
@@ -112,7 +206,7 @@ const initial: Data = {
 			name: { ru: "Анна Коваль", zh: "Anna Koval" },
 			subtitle: { ru: "Сценограф-постановщик", zh: "Set designer" },
 			tags: [{ ru: "Лорем ипсум", zh: "Lorem ipsum" }, { ru: "долор сит", zh: "dolor sit" }, { ru: "Сценограф-постановщик", zh: "Set designer" }],
-			img: asset("/author6.jpg"),
+			img: "author6.jpg",
 			text: { ru: "Лорем ипсум долор сит амет, ад сед яуем вирис сплендиде. Сит ребум ириуре цонцлудатуряуе еи, пертинах интеллегам еум еа. Цаусае вивендум ад цум, аццумсан репрехендунт хас не, иллум индоцтум сеа но.\nИус ех идяуе темпорибус, хас цу нострум маиестатис, симул персиус вис те. Торяуатос цомпрехенсам не еос. Хис ат меис десеруиссе, нумяуам темпорибус меи еа, детрацто делецтус сингулис ан яуо. Оптион регионе лаборес иус но.", zh: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laudantium fuga accusantium et hic! Architecto ipsam laborum doloribus dolorum numquam ut magnam commodi fuga dolores, ducimus sapiente, labore, minima cupiditate natus!\nLorem ipsum dolor, sit amet consectetur adipisicing elit. Recusandae ex natus quasi dolorem voluptate aspernatur illum nulla culpa molestiae fuga. Neque repudiandae ipsam voluptatem amet consectetur vel, harum ab architecto." },
 			projects: _projects,
 		},
@@ -123,7 +217,7 @@ const initial: Data = {
 			name: { ru: "Иванов Иван", zh: "Ivan Ivanov" },
 			subtitle: { ru: "Основатель проекта", zh: "Founder of the project" },
 			tags: [],
-			img: asset("/creator1.jpg"),
+			img: "creator1.jpg",
 			text: { ru: "Лорем ипсум долор сит амет, ад сед яуем вирис сплендиде. Сит ребум ириуре цонцлудатуряуе еи, пертинах интеллегам еум еа. Цаусае вивендум ад цум, аццумсан репрехендунт хас не, иллум индоцтум сеа но.", zh: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laudantium fuga accusantium et hic! Architecto ipsam laborum doloribus dolorum numquam ut magnam commodi fuga dolores, ducimus sapiente, labore, minima cupiditate natus!" },
 			projects: [],
 		},
@@ -132,7 +226,7 @@ const initial: Data = {
 			name: { ru: "Лю Сун цы", zh: "Liu Song ci" },
 			subtitle: { ru: "Главный идеолог", zh: "Main ideologist" },
 			tags: [],
-			img: asset("/creator2.jpg"),
+			img: "creator2.jpg",
 			text: { ru: "Лорем ипсум долор сит амет, ад сед яуем вирис сплендиде. Сит ребум ириуре цонцлудатуряуе еи, пертинах интеллегам еум еа. Цаусае вивендум ад цум, аццумсан репрехендунт хас не, иллум индоцтум сеа но.", zh: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laudantium fuga accusantium et hic! Architecto ipsam laborum doloribus dolorum numquam ut magnam commodi fuga dolores, ducimus sapiente, labore, minima cupiditate natus!" },
 			projects: [],
 		},
@@ -141,7 +235,7 @@ const initial: Data = {
 			name: { ru: "Пётр Алексеевич", zh: "Peter Alekseevich" },
 			subtitle: { ru: "Щедрый спонсор", zh: "Generous sponsor" },
 			tags: [],
-			img: asset("/creator3.jpg"),
+			img: "creator3.jpg",
 			text: { ru: "Лорем ипсум долор сит амет, ад сед яуем вирис сплендиде. Сит ребум ириуре цонцлудатуряуе еи, пертинах интеллегам еум еа. Цаусае вивендум ад цум, аццумсан репрехендунт хас не, иллум индоцтум сеа но.", zh: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laudantium fuga accusantium et hic! Architecto ipsam laborum doloribus dolorum numquam ut magnam commodi fuga dolores, ducimus sapiente, labore, minima cupiditate natus!" },
 			projects: [],
 		},
@@ -150,12 +244,15 @@ const initial: Data = {
 			name: { ru: "София Коваль", zh: "Sofia Koval" },
 			subtitle: { ru: "Искусствовед", zh: "Art historian" },
 			tags: [],
-			img: asset("/creator4.jpg"),
+			img: "creator4.jpg",
 			text: { ru: "Лорем ипсум долор сит амет, ад сед яуем вирис сплендиде. Сит ребум ириуре цонцлудатуряуе еи, пертинах интеллегам еум еа. Цаусае вивендум ад цум, аццумсан репрехендунт хас не, иллум индоцтум сеа но.", zh: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laudantium fuga accusantium et hic! Architecto ipsam laborum doloribus dolorum numquam ut magnam commodi fuga dolores, ducimus sapiente, labore, minima cupiditate natus!" },
 			projects: [],
 		},
 	],
 }
 
+if (!fs.existsSync(dataPath))
+	fs.cpSync("data_initial", dataPath, { recursive: true });
+
 if (!fs.existsSync(dbPath))
-	fs.writeFileSync(dbPath, JSON.stringify(initial), { encoding: "utf8" });
+	fs.writeFileSync(dbPath, JSON.stringify(initial), "utf8");

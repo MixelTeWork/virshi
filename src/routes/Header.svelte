@@ -1,6 +1,17 @@
 <script lang="ts">
 	import { asset, resolve } from "$app/paths";
-	import { curLang, lt, setLocale } from "$lib/ltext";
+	import type { LText } from "$lib";
+	import { curLang, lt, setLocale, lto } from "$lib/ltext";
+
+	const {
+		txt,
+	}: {
+		txt: {
+			authors: LText;
+			about: LText;
+			contact: LText;
+		};
+	} = $props();
 
 	let open = $state(false);
 	function close() {
@@ -28,13 +39,13 @@
 		</div>
 		<nav class="links">
 			<a href={resolve("/authors")} onclick={close}>
-				{$lt("Авторы", "Authors")}
+				{$lto(txt.authors)}
 			</a>
 			<a href={resolve("/about")} onclick={close}>
-				{$lt("О проекте", "About")}
+				{$lto(txt.about)}
 			</a>
 			<a href={resolve("/contact")} onclick={close}>
-				{$lt("Контакты", "Contact")}
+				{$lto(txt.contact)}
 			</a>
 		</nav>
 		<div class="langSwitch">

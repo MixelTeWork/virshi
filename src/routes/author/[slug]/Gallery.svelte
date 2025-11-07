@@ -2,13 +2,15 @@
 	import arrowD from "./arrow.svg";
 	import arrow from "$lib/arrow.svg";
 	import Popup from "$lib/Popup/Popup.svelte";
-    import { lt, lto } from "$lib/ltext";
-    import type { IProject } from "$lib";
+	import { lt, lto } from "$lib/ltext";
+	import type { IProject, LText } from "$lib";
+	import { resolve } from "$app/paths";
 
 	interface Props {
 		projects: IProject[];
+		title: LText;
 	}
-	const { projects }: Props = $props();
+	const { projects, title }: Props = $props();
 	const cards = $state([] as HTMLElement[]);
 	let galleryEl: HTMLElement;
 	let selected = $state(0);
@@ -34,7 +36,7 @@
 </script>
 
 <Popup
-	project={projects[openedProject]}
+	item={projects[openedProject]}
 	close={() => {
 		openedProject = -1;
 	}}
@@ -48,14 +50,17 @@
 
 <div class="gallery" bind:this={galleryEl}>
 	<div class="title">
-		<h2>{$lt( "Галерея", "Gallery")}</h2>
+		<h2>{$lto(title)}</h2>
 		<div class="pager">
 			<span>{selected < 9 ? "0" : ""}{selected + 1}</span>
 			<span> — </span>
 			<span>{projects.length < 10 ? "0" : ""}{projects.length}</span>
 		</div>
 		<div class="btns">
-			<button aria-label={$lt("предыдущее", "previous")} onclick={selectPrev}>
+			<button
+				aria-label={$lt("предыдущее", "previous")}
+				onclick={selectPrev}
+			>
 				<img src={arrow} alt={$lt("предыдущее", "previous")} />
 			</button>
 			<button aria-label={$lt("следующее", "next")} onclick={selectNext}>
@@ -71,7 +76,10 @@
 					bind:this={cards[i]}
 				>
 					<div class="project__img">
-						<img src={proj.img} alt={$lto(proj.name)} />
+						<img
+							src={resolve(`/data/${proj.img}`)}
+							alt={$lto(proj.name)}
+						/>
 					</div>
 					<div class="project__subtitle">
 						{$lto(proj.subtitle)}
