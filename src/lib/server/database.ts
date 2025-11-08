@@ -1,5 +1,8 @@
 import fs from "node:fs";
+import fsp from "node:fs/promises";
 import type { Data, IProject } from "$lib/types";
+import path from "node:path";
+import { randomUUID } from "node:crypto";
 
 export const dataPath = "data/";
 const dbPath = dataPath + "data.json";
@@ -20,11 +23,28 @@ export async function getData()
 	});
 }
 
-export async function editData(fn: (data: Data) => void)
+export async function editData(fn: (data: Data) => void | Promise<void>)
 {
-	fn(await getData());
+	await fn(await getData());
 	saveData();
 }
+
+type StringKeys<T> = {
+	[K in keyof T]: T[K] extends string ? K : never
+}[keyof T];
+export async function updateImg<T>(obj: T, key: StringKeys<T>, file: File)
+{
+	console.log("some log for testing");
+	const ext = file.name.split(".").at(-1) || "bin"
+	const oldname = (obj[key] as string);
+	const name = oldname.split(".").slice(0, -1).join(".").split("__");
+	const newname = `${name.length > 1 ? name.slice(0, -1).join("__") : name[0]}__${randomUUID()}.${ext}`;
+	(obj[key] as string) = newname;
+	await fsp.writeFile(path.resolve(dataPath, newname), Buffer.from(await file.arrayBuffer()));
+	const oldPath = path.resolve(dataPath, oldname);
+	if (fs.existsSync(oldPath)) await fsp.rm(oldPath);
+}
+
 
 let saveTimeout: NodeJS.Timeout | null = null;
 let saving = false;
@@ -36,7 +56,6 @@ function saveData(retries = 3)
 		if (saving) return saveData(retries);
 		saveTimeout = null;
 		saving = true;
-		console.log("write data");
 		fs.writeFile(dbPath, JSON.stringify(data), "utf8", (err) =>
 		{
 			saving = false;

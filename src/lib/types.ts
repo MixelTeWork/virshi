@@ -22,6 +22,7 @@ export const IAuthorTextScheme = v.object({
 	subtitle: LTextScheme,
 	text: LTextScheme,
 	tags: LTextScheme,
+	img: v.optional(v.file()),
 });
 export type ICreatorText = v.InferOutput<typeof ICreatorTextScheme>;
 export const ICreatorTextScheme = v.object({
@@ -29,9 +30,10 @@ export const ICreatorTextScheme = v.object({
 	name: LTextScheme,
 	subtitle: LTextScheme,
 	text: LTextScheme,
+	img: v.optional(v.file()),
 });
 export type IAuthor = v.InferOutput<typeof IAuthorScheme>;
-export const IAuthorScheme = v.intersect([v.omit(IAuthorTextScheme, ["tags"]), v.object({
+export const IAuthorScheme = v.intersect([v.omit(IAuthorTextScheme, ["tags", "img"]), v.object({
 	img: v.string(),
 	tags: v.array(LTextScheme),
 	projects: v.array(IProjectScheme),
@@ -59,9 +61,10 @@ export const ItxtContactsScheme = v.object({
 	mail: v.object({ title: LTextScheme, value: v.string() }),
 	phone: v.object({ title: LTextScheme, value: v.string() }),
 	address: v.object({ title: LTextScheme, value: LTextScheme }),
+	map: v.optional(v.file()),
 });
 export type ItxtContactsFull = v.InferOutput<typeof ItxtContactsFullScheme>;
-export const ItxtContactsFullScheme = v.intersect([ItxtContactsScheme, v.object({
+export const ItxtContactsFullScheme = v.intersect([v.omit(ItxtContactsScheme, ["map"]), v.object({
 	map: v.string(),
 })]);
 
@@ -84,9 +87,10 @@ export const ItxtAboutScheme = v.object({
 	text: LTextScheme,
 	creators: LTextScheme,
 	sponsors: LTextScheme,
+	backImg: v.optional(v.file()),
 });
 export type ItxtAboutFull = v.InferOutput<typeof ItxtAboutFullScheme>;
-export const ItxtAboutFullScheme = v.intersect([ItxtAboutScheme, v.object({
+export const ItxtAboutFullScheme = v.intersect([v.omit(ItxtAboutScheme, ["backImg"]), v.object({
 	sponsorImgs: v.array(v.string()),
 	backImg: v.string(),
 })]);

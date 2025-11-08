@@ -14,7 +14,7 @@ export async function GET({ params })
 		return new Response(data, {
 			headers: {
 				"Content-Type": getContentType(file),
-				"Cache-Control": "public,max-age=3000,stale-while-revalidate=2592000",
+				"Cache-Control": "public,max-age=2592000",
 			},
 		});
 	}

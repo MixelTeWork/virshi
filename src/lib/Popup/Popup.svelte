@@ -62,7 +62,9 @@
 				<div class="body">
 					<h2>{$lto(item.name)}</h2>
 					<h3>{$lto(item.subtitle)}</h3>
-					<p>{$lto(item.text)}</p>
+					{#each $lto(item.text).split("\n") as p}
+						<p>{p}</p>
+					{/each}
 				</div>
 			</div>
 		</div>

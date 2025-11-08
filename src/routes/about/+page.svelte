@@ -99,7 +99,9 @@
 			<div class="img__content" transition:fade={{ duration: 250 }}>
 				<h2>{$lto(selected.name)}</h2>
 				<h3>{$lto(selected.subtitle)}</h3>
-				<p>{$lto(selected.text)}</p>
+				{#each $lto(selected.text).split("\n") as p}
+					<p>{p}</p>
+				{/each}
 			</div>
 		{/if}
 	</div>

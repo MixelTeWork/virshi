@@ -8,18 +8,19 @@
 		updateAuthor,
 		updateAbout,
 		modifyAuthor,
-        modifyCreator,
+		modifyCreator,
 	} from "./data.remote";
+	import FieldImg from "./FieldImg.svelte";
 
 	const { data } = $props();
 	updateHeader.fields.set(data.txt.header);
 	updateFooter.fields.set(data.txt.footer);
-	updateContacts.fields.set(data.txt.contacts);
+	updateContacts.fields.set({ ...data.txt.contacts, map: undefined });
 	updateAuthors.fields.set(data.txt.authors);
 	updateAuthor.fields.set(data.txt.author);
-	updateAbout.fields.set(data.txt.about);
+	updateAbout.fields.set({ ...data.txt.about, backImg: undefined });
 
-	const authorForms = data.authors.map((author) => {
+	const authorForms = data.authors.map((author, i) => {
 		const form = modifyAuthor.for(author.id);
 		form.fields.set({
 			...author,
@@ -27,30 +28,37 @@
 				ru: author.tags.map((t) => t.ru).join(";"),
 				zh: author.tags.map((t) => t.zh).join(";"),
 			},
+			img: undefined,
 		});
-		return { id: author.id, form };
+		return { author: () => data.authors[i], form };
 	});
 
-	const creatorForms = data.creators.map((creator) => {
+	const creatorForms = data.creators.map((creator, i) => {
 		const form = modifyCreator.for(creator.id);
-		form.fields.set(creator);
-		return { id: creator.id, form };
+		form.fields.set({ ...creator, img: undefined });
+		return { creator: () => data.creators[i], form };
 	});
 
-	function enchance(
-		f: RemoteForm<any, any> | Omit<RemoteForm<any, any>, "for">,
-	) {
+	function enchance<
+		T extends RemoteForm<any, any> | Omit<RemoteForm<any, any>, "for">,
+		K extends keyof T["fields"],
+	>(f: T, resetFields: K[] = []) {
 		return f.enhance(async ({ form, data, submit }) => {
 			await submit();
+			form.reset();
+			await new Promise((r) => setTimeout(r));
 			f.fields.set(data);
+			resetFields.forEach((key) => f.fields[key as any].set(null));
 		});
 	}
 
 	type Page = "ui" | "pages" | "authors" | "creators";
 	let page = $state("ui" as Page);
-	function toPage(p: Page) {
-		return () => (page = p);
-	}
+	const toPage = (p: Page) => () => (page = p);
+	let authorCur = $state(0);
+	const toAuthor = (a: number) => () => (authorCur = a);
+	let creatorCur = $state(0);
+	const toCreator = (a: number) => () => (creatorCur = a);
 </script>
 
 <svelte:head>
@@ -96,51 +104,105 @@
 			{@render fromEnd(updateAuthor)}
 		</form>
 		<h2>Contacts</h2>
-		<form {...enchance(updateContacts)}>
+		<form
+			{...enchance(updateContacts, ["map"])}
+			enctype="multipart/form-data"
+		>
 			{@render field("title", updateContacts.fields.title)}
-			{@render fieldTA("text", updateContacts.fields.text)}
+			{@render fieldTA(
+				"text",
+				updateContacts.fields.text,
+				"Текст разбивается на несколько <p> тегов по переносам строк",
+			)}
 			{@render fieldD("mail", updateContacts.fields.mail)}
 			{@render fieldD("phone", updateContacts.fields.phone)}
 			{@render field("address", updateContacts.fields.address.title)}
 			{@render field("", updateContacts.fields.address.value)}
-			<div class="field"><h3>map</h3></div>
+			<FieldImg
+				title="map"
+				field={updateContacts.fields.map}
+				current={data.txt.contacts.map}
+			/>
 			{@render fromEnd(updateContacts)}
 		</form>
 		<h2>About</h2>
-		<form {...enchance(updateAbout)}>
+		<form
+			{...enchance(updateAbout, ["backImg"])}
+			enctype="multipart/form-data"
+		>
 			{@render field("title", updateAbout.fields.title)}
-			{@render fieldTA("text", updateAbout.fields.text)}
+			{@render fieldTA(
+				"text",
+				updateAbout.fields.text,
+				"Текст разбивается на несколько <p> тегов по переносам строк",
+			)}
 			{@render field("creators", updateAbout.fields.creators)}
 			{@render field("sponsors", updateAbout.fields.sponsors)}
 			<div class="field"><h3>sponsorImgs</h3></div>
-			<div class="field"><h3>backImg</h3></div>
+			<FieldImg
+				title="backImg"
+				field={updateAbout.fields.backImg}
+				current={data.txt.about.backImg}
+			/>
 			{@render fromEnd(updateAbout)}
 		</form>
 	{:else if page == "authors"}
-		{#each authorForms as { id, form }}
-			<h2>Author {id}</h2>
-			<form {...enchance(form)}>
+		<nav>
+			{#each { length: 6 } as _, i}
+				<button onclick={toAuthor(i)}>{i + 1}</button>
+			{/each}
+		</nav>
+		{@const { author, form } = authorForms[authorCur]}
+		<h2>Author {author().id}</h2>
+		{#key author().id}
+			<form {...enchance(form, ["img"])} enctype="multipart/form-data">
 				{@render field("name", form.fields.name)}
 				{@render field("subtitle", form.fields.subtitle)}
-				{@render fieldTA("text", form.fields.text)}
-				{@render field("tags", form.fields.tags)}
-				<div class="field"><h3>img</h3></div>
+				{@render fieldTA(
+					"text",
+					form.fields.text,
+					"Текст разбивается на несколько <p> тегов по переносам строк",
+				)}
+				{@render field(
+					"tags",
+					form.fields.tags,
+					"Строка делится на теги по точке с запятой (;)",
+				)}
+				<FieldImg
+					title="img"
+					field={form.fields.img}
+					current={author().img}
+					aspectRatio={4 / 5}
+				/>
 				<div class="field"><h3>projects</h3></div>
 				{@render fromEnd(form)}
 			</form>
-		{/each}
+		{/key}
 	{:else if page == "creators"}
-		{#each creatorForms as { id, form }}
-			<h2>Creator {id}</h2>
-			<form {...enchance(form)}>
+		<nav>
+			{#each { length: 4 } as _, i}
+				<button onclick={toCreator(i)}>{i + 1}</button>
+			{/each}
+		</nav>
+		{@const { creator, form } = creatorForms[creatorCur]}
+		<h2>Creator {creator().id}</h2>
+		{#key creator().id}
+			<form {...enchance(form, ["img"])} enctype="multipart/form-data">
 				{@render field("name", form.fields.name)}
 				{@render field("subtitle", form.fields.subtitle)}
-				{@render fieldTA("text", form.fields.text)}
-				<div class="field"><h3>img</h3></div>
-				<div class="field"><h3>projects</h3></div>
+				{@render fieldTA(
+					"text",
+					form.fields.text,
+					"Текст разбивается на несколько <p> тегов по переносам строк",
+				)}
+				<FieldImg
+					title="img"
+					field={form.fields.img}
+					current={creator().img}
+				/>
 				{@render fromEnd(form)}
 			</form>
-		{/each}
+		{/key}
 	{/if}
 </div>
 
@@ -154,12 +216,36 @@
 				: ""}{issue.message}
 		</p>
 	{/each}
+	{#if !!form.pending || !!form.result}
+		<p class={["result", { result_end: !form.pending }]}>
+			{#if !!form.pending}
+				Отправка...
+			{:else}
+				Сохранено
+			{/if}
+		</p>
+	{/if}
 	<button disabled={!!form.pending} class="saveBtn">save</button>
 {/snippet}
 
-{#snippet field(title: string, fields: typeof updateHeader.fields.authors)}
+{#snippet helpIco(text?: string)}
+	{#if text}
+		<span class="help">
+			<span class="help__text">{text}</span>
+		</span>
+	{/if}
+{/snippet}
+
+{#snippet field(
+	title: string,
+	fields: typeof updateHeader.fields.authors,
+	text?: string,
+)}
 	<div class="field">
-		<h3>{title}</h3>
+		<h3>
+			<span>{title}</span>
+			{@render helpIco(text)}
+		</h3>
 		<label>
 			<span>ru:</span>
 			<input {...fields.ru.as("text")} autocomplete="off" />
@@ -171,24 +257,42 @@
 	</div>
 {/snippet}
 
-{#snippet fieldS(title: string, field: typeof updateFooter.fields.date)}
+{#snippet fieldS(
+	title: string,
+	field: typeof updateFooter.fields.date,
+	text?: string,
+)}
 	<div class="field fieldS">
-		<h3>{title}</h3>
+		<h3>
+			<span>{title}</span>
+			{@render helpIco(text)}
+		</h3>
 		<input {...field.as("text")} autocomplete="off" />
 	</div>
 {/snippet}
 
-{#snippet fieldD(title: string, fields: typeof updateContacts.fields.mail)}
-	{@render field(title, fields.title)}
+{#snippet fieldD(
+	title: string,
+	fields: typeof updateContacts.fields.mail,
+	text?: string,
+)}
+	{@render field(title, fields.title, text)}
 	<div class="field fieldS">
 		<span></span>
 		<input {...fields.value.as("text")} autocomplete="off" />
 	</div>
 {/snippet}
 
-{#snippet fieldTA(title: string, fields: typeof updateHeader.fields.authors)}
+{#snippet fieldTA(
+	title: string,
+	fields: typeof updateHeader.fields.authors,
+	text?: string,
+)}
 	<div class="field">
-		<h3>{title}</h3>
+		<h3>
+			<span>{title}</span>
+			{@render helpIco(text)}
+		</h3>
 		<label>
 			<span>ru:</span>
 			<textarea {...fields.ru.as("text")} autocomplete="off"></textarea>
@@ -234,15 +338,24 @@
 		font-size: 1.25rem;
 		color: #e63737;
 	}
+	.result {
+		font-family: Manrope, Arial, Helvetica, sans-serif;
+		font-size: 1.25rem;
+		color: #1dbe4e;
+		transition: display 500ms allow-discrete;
+	}
+	.result_end {
+		display: none;
+	}
 
 	.field {
 		display: grid;
-		grid-template-columns: 5rem 1fr 1fr;
+		grid-template-columns: 6rem 1fr 1fr;
 		align-items: center;
 		gap: 1rem;
 	}
 	.fieldS {
-		grid-template-columns: 5rem 1fr;
+		grid-template-columns: 6rem 1fr;
 	}
 	.field label {
 		display: flex;
@@ -262,6 +375,39 @@
 		border: none;
 		border-bottom: 1px solid currentColor;
 		outline: none;
+	}
+
+	.help {
+		position: relative;
+		padding: 0.15rem;
+	}
+	.help::before {
+		content: "?";
+		display: inline-flex;
+		justify-content: center;
+		align-items: center;
+		vertical-align: middle;
+		border-radius: 1em;
+		font-size: 0.75rem;
+		width: 1em;
+		height: 1em;
+		background-color: #00ff0022;
+	}
+	.help__text {
+		position: absolute;
+		bottom: 100%;
+		left: 50%;
+		width: 200px;
+		max-width: max-content;
+		translate: -50% 0;
+		font-size: 0.95rem;
+		background-color: white;
+		border: 1px solid black;
+		padding: 0.25rem 0.5rem;
+		display: none;
+	}
+	.help:hover .help__text {
+		display: block;
 	}
 
 	.saveBtn {
