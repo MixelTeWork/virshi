@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { RemoteForm } from "@sveltejs/kit";
+	import type { RemoteForm, RemoteFormField } from "@sveltejs/kit";
 	import {
 		updateHeader,
 		updateFooter,
@@ -10,7 +10,8 @@
 		modifyAuthor,
 		modifyCreator,
 	} from "./data.remote";
-	import FieldImg from "./FieldImg.svelte";
+	import FieldImg from "./InputImg.svelte";
+	import { onMount } from "svelte";
 
 	const { data } = $props();
 	updateHeader.fields.set(data.txt.header);
@@ -18,7 +19,19 @@
 	updateContacts.fields.set({ ...data.txt.contacts, map: undefined });
 	updateAuthors.fields.set(data.txt.authors);
 	updateAuthor.fields.set(data.txt.author);
-	updateAbout.fields.set({ ...data.txt.about, backImg: undefined });
+	updateAbout.fields.set({
+		...data.txt.about,
+		backImg: undefined,
+		sponsorImgs: [],
+	});
+	let sponsorImgs = $state(data.txt.about.sponsorImgs);
+	onMount(() => {
+		$effect(() => {
+			const imgs = data.txt.about.sponsorImgs;
+			sponsorImgs = imgs;
+			updateAbout.fields.sponsorImgs.set(imgs.map(v => new File([], v)));
+		});
+	});
 
 	const authorForms = data.authors.map((author, i) => {
 		const form = modifyAuthor.for(author.id);
@@ -39,21 +52,23 @@
 		return { creator: () => data.creators[i], form };
 	});
 
-	function enchance<
-		T extends RemoteForm<any, any> | Omit<RemoteForm<any, any>, "for">,
-		K extends keyof T["fields"],
-	>(f: T, resetFields: K[] = []) {
+	function enchance<T extends RemoteForm<any, any> | Omit<RemoteForm<any, any>, "for">, K extends keyof T["fields"]>(
+		f: T,
+		resetFields: (K | [K, () => any])[] = [],
+	) {
 		return f.enhance(async ({ form, data, submit }) => {
 			await submit();
 			form.reset();
 			await new Promise((r) => setTimeout(r));
 			f.fields.set(data);
-			resetFields.forEach((key) => f.fields[key as any].set(null));
+			resetFields.forEach((key: any) =>
+				typeof key == "string" ? f.fields[key].set(null) : f.fields[key[0]].set(key[1]()),
+			);
 		});
 	}
 
 	type Page = "ui" | "pages" | "authors" | "creators";
-	let page = $state("ui" as Page);
+	let page = $state("pages" as Page);
 	const toPage = (p: Page) => () => (page = p);
 	let authorCur = $state(0);
 	const toAuthor = (a: number) => () => (authorCur = a);
@@ -104,10 +119,7 @@
 			{@render fromEnd(updateAuthor)}
 		</form>
 		<h2>Contacts</h2>
-		<form
-			{...enchance(updateContacts, ["map"])}
-			enctype="multipart/form-data"
-		>
+		<form {...enchance(updateContacts, ["map"])} enctype="multipart/form-data">
 			{@render field("title", updateContacts.fields.title)}
 			{@render fieldTA(
 				"text",
@@ -118,32 +130,44 @@
 			{@render fieldD("phone", updateContacts.fields.phone)}
 			{@render field("address", updateContacts.fields.address.title)}
 			{@render field("", updateContacts.fields.address.value)}
-			<FieldImg
-				title="map"
-				field={updateContacts.fields.map}
-				current={data.txt.contacts.map}
-			/>
+			{@render fieldImg("imapmg", updateContacts.fields.map, data.txt.contacts.map)}
 			{@render fromEnd(updateContacts)}
 		</form>
 		<h2>About</h2>
 		<form
-			{...enchance(updateAbout, ["backImg"])}
+			{...enchance(updateAbout, ["backImg", ["sponsorImgs", () => sponsorImgs.map(v => new File([], v))]])}
 			enctype="multipart/form-data"
 		>
 			{@render field("title", updateAbout.fields.title)}
-			{@render fieldTA(
-				"text",
-				updateAbout.fields.text,
-				"Текст разбивается на несколько <p> тегов по переносам строк",
-			)}
+			{@render fieldTA("text", updateAbout.fields.text, "Текст разбивается на несколько <p> тегов по переносам строк")}
 			{@render field("creators", updateAbout.fields.creators)}
 			{@render field("sponsors", updateAbout.fields.sponsors)}
-			<div class="field"><h3>sponsorImgs</h3></div>
-			<FieldImg
-				title="backImg"
-				field={updateAbout.fields.backImg}
-				current={data.txt.about.backImg}
-			/>
+			<div class="field fieldS">
+				<h3>sponsors</h3>
+				<div class="sponsors">
+					<div class="sponsors__items">
+						{#each sponsorImgs as img, i}
+							<div>
+								<FieldImg field={updateAbout.fields.sponsorImgs[i]} current={img} aspectRatio={2} />
+								<button
+									class="sponsors__remove"
+									type="button"
+									onclick={() => {
+										for (let j = i; j < sponsorImgs.length - 1; j++) {
+											updateAbout.fields.sponsorImgs[j].set(updateAbout.fields.sponsorImgs[j + 1].value());
+										}
+										sponsorImgs.splice(i, 1);
+									}}
+								>
+									Удалить
+								</button>
+							</div>
+						{/each}
+					</div>
+					<button class="sponsors__add" type="button" onclick={() => sponsorImgs.push("")}>Добавить</button>
+				</div>
+			</div>
+			{@render fieldImg("backImg", updateAbout.fields.backImg, data.txt.about.backImg)}
 			{@render fromEnd(updateAbout)}
 		</form>
 	{:else if page == "authors"}
@@ -158,22 +182,9 @@
 			<form {...enchance(form, ["img"])} enctype="multipart/form-data">
 				{@render field("name", form.fields.name)}
 				{@render field("subtitle", form.fields.subtitle)}
-				{@render fieldTA(
-					"text",
-					form.fields.text,
-					"Текст разбивается на несколько <p> тегов по переносам строк",
-				)}
-				{@render field(
-					"tags",
-					form.fields.tags,
-					"Строка делится на теги по точке с запятой (;)",
-				)}
-				<FieldImg
-					title="img"
-					field={form.fields.img}
-					current={author().img}
-					aspectRatio={4 / 5}
-				/>
+				{@render fieldTA("text", form.fields.text, "Текст разбивается на несколько <p> тегов по переносам строк")}
+				{@render field("tags", form.fields.tags, "Строка делится на теги по точке с запятой (;)")}
+				{@render fieldImg("img", form.fields.img, author().img, 4 / 5)}
 				<div class="field"><h3>projects</h3></div>
 				{@render fromEnd(form)}
 			</form>
@@ -190,30 +201,18 @@
 			<form {...enchance(form, ["img"])} enctype="multipart/form-data">
 				{@render field("name", form.fields.name)}
 				{@render field("subtitle", form.fields.subtitle)}
-				{@render fieldTA(
-					"text",
-					form.fields.text,
-					"Текст разбивается на несколько <p> тегов по переносам строк",
-				)}
-				<FieldImg
-					title="img"
-					field={form.fields.img}
-					current={creator().img}
-				/>
+				{@render fieldTA("text", form.fields.text, "Текст разбивается на несколько <p> тегов по переносам строк")}
+				{@render fieldImg("img", form.fields.img, creator().img)}
 				{@render fromEnd(form)}
 			</form>
 		{/key}
 	{/if}
 </div>
 
-{#snippet fromEnd(
-	form: RemoteForm<any, any> | Omit<RemoteForm<any, any>, "for">,
-)}
+{#snippet fromEnd(form: RemoteForm<any, any> | Omit<RemoteForm<any, any>, "for">)}
 	{#each form.fields.allIssues() as issue}
 		<p class="error">
-			{issue.path.length > 0
-				? `${issue.path.join(".")}: `
-				: ""}{issue.message}
+			{issue.path.length > 0 ? `${issue.path.join(".")}: ` : ""}{issue.message}
 		</p>
 	{/each}
 	{#if !!form.pending || !!form.result}
@@ -225,7 +224,7 @@
 			{/if}
 		</p>
 	{/if}
-	<button disabled={!!form.pending} class="saveBtn">save</button>
+	<button disabled={!!form.pending} class="saveBtn">Сохранить</button>
 {/snippet}
 
 {#snippet helpIco(text?: string)}
@@ -236,11 +235,7 @@
 	{/if}
 {/snippet}
 
-{#snippet field(
-	title: string,
-	fields: typeof updateHeader.fields.authors,
-	text?: string,
-)}
+{#snippet field(title: string, fields: typeof updateHeader.fields.authors, text?: string)}
 	<div class="field">
 		<h3>
 			<span>{title}</span>
@@ -257,11 +252,7 @@
 	</div>
 {/snippet}
 
-{#snippet fieldS(
-	title: string,
-	field: typeof updateFooter.fields.date,
-	text?: string,
-)}
+{#snippet fieldS(title: string, field: typeof updateFooter.fields.date, text?: string)}
 	<div class="field fieldS">
 		<h3>
 			<span>{title}</span>
@@ -271,11 +262,7 @@
 	</div>
 {/snippet}
 
-{#snippet fieldD(
-	title: string,
-	fields: typeof updateContacts.fields.mail,
-	text?: string,
-)}
+{#snippet fieldD(title: string, fields: typeof updateContacts.fields.mail, text?: string)}
 	{@render field(title, fields.title, text)}
 	<div class="field fieldS">
 		<span></span>
@@ -283,11 +270,7 @@
 	</div>
 {/snippet}
 
-{#snippet fieldTA(
-	title: string,
-	fields: typeof updateHeader.fields.authors,
-	text?: string,
-)}
+{#snippet fieldTA(title: string, fields: typeof updateHeader.fields.authors, text?: string)}
 	<div class="field">
 		<h3>
 			<span>{title}</span>
@@ -301,6 +284,13 @@
 			<span>zh:</span>
 			<textarea {...fields.zh.as("text")} autocomplete="off"></textarea>
 		</label>
+	</div>
+{/snippet}
+
+{#snippet fieldImg(title: string, field: RemoteFormField<File>, current: string, aspectRatio?: number)}
+	<div class="field fieldS">
+		<h3>{title}</h3>
+		<FieldImg {field} {current} {aspectRatio} />
 	</div>
 {/snippet}
 
@@ -333,6 +323,40 @@
 		gap: 1rem;
 	}
 
+	.sponsors {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+	.sponsors__items {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1rem;
+	}
+	.sponsors__items > div {
+		position: relative;
+	}
+	.sponsors__remove {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		background-color: #e63737bb;
+		color: white;
+		padding: 0.2rem 0.4rem;
+		border-radius: 0 0 0.5rem 0.5rem;
+		opacity: 0.5;
+		transition: opacity 150ms;
+	}
+	.sponsors__items > div:hover .sponsors__remove {
+		opacity: 1;
+	}
+	.sponsors__add {
+		background-color: #00000011;
+		padding: 0.2rem 0.4rem;
+		border-radius: 0.25rem;
+		margin-bottom: 1rem;
+	}
 	.error {
 		font-family: Manrope, Arial, Helvetica, sans-serif;
 		font-size: 1.25rem;

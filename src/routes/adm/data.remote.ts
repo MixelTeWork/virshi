@@ -2,7 +2,7 @@ import * as v from "valibot";
 import { error, redirect, type Invalid } from "@sveltejs/kit";
 import { form, getRequestEvent } from "$app/server";
 import { IAuthorTextScheme, ICreatorTextScheme, ItxtAboutScheme, ItxtAuthorScheme, ItxtAuthorsScheme, ItxtContactsScheme, ItxtFooterScheme, ItxtHeaderScheme, type Data } from "$lib/types";
-import { editData, updateImg } from "$lib/server/database";
+import { deleteImg, editData, updateImg } from "$lib/server/database";
 import { env } from '$env/dynamic/private';
 import { createSession } from "$lib/server/auth";
 import { resolve } from "$app/paths";
@@ -36,6 +36,23 @@ export const updateAbout = form(ItxtAboutScheme, update(async (D, data) =>
 {
 	D.txt.about = { ...data, sponsorImgs: D.txt.about.sponsorImgs, backImg: D.txt.about.backImg };
 	if (data.backImg) await updateImg(D.txt.about, "backImg", data.backImg);
+	console.log(data.sponsorImgs);
+	const newImages = [] as string[];
+	for (const file of data.sponsorImgs)
+	{
+		if (file.size > 0)
+			await updateImg(newImages, newImages.length, file, "sponsor");
+		else
+		{
+			const imgI = D.txt.about.sponsorImgs.indexOf(file.name);
+			if (imgI < 0) continue;
+			newImages.push(D.txt.about.sponsorImgs[imgI]);
+			D.txt.about.sponsorImgs.splice(imgI, 1);
+		}
+	}
+	for (const img of D.txt.about.sponsorImgs)
+		await deleteImg(img);
+	D.txt.about.sponsorImgs = newImages;
 }));
 
 export const modifyAuthor = form(IAuthorTextScheme, update(async (D, data, invalid) =>

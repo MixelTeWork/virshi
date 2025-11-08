@@ -87,10 +87,11 @@ export const ItxtAboutScheme = v.object({
 	text: LTextScheme,
 	creators: LTextScheme,
 	sponsors: LTextScheme,
+	sponsorImgs: v.array(v.file()),
 	backImg: v.optional(v.file()),
 });
 export type ItxtAboutFull = v.InferOutput<typeof ItxtAboutFullScheme>;
-export const ItxtAboutFullScheme = v.intersect([v.omit(ItxtAboutScheme, ["backImg"]), v.object({
+export const ItxtAboutFullScheme = v.intersect([v.omit(ItxtAboutScheme, ["sponsorImgs", "backImg"]), v.object({
 	sponsorImgs: v.array(v.string()),
 	backImg: v.string(),
 })]);

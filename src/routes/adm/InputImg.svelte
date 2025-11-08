@@ -3,52 +3,39 @@
 	import type { RemoteFormField } from "@sveltejs/kit";
 
 	const {
-		title,
 		field,
 		current,
 		aspectRatio = 1,
 	}: {
-		title: string;
 		field: RemoteFormField<File>;
 		current: string;
 		aspectRatio?: number;
 	} = $props();
 	let img = $state("");
 	$effect(() => {
-		img = resolve(`/data/${current}`);
+		if (field.value()?.size > 0) {
+			img = URL.createObjectURL(field.value());
+		} else {
+			if (current) img = resolve(`/data/${current}`);
+		}
 	});
 </script>
 
-<div class="field">
-	<h3>{title}</h3>
-	<label class="img" style:aspect-ratio={aspectRatio}>
-		{#if img}
-			<img src={img} alt="Картинка" />
-		{/if}
-		<input
-			{...field.as("file")}
-			onchange={async (e) => {
-				const file = (e.target as HTMLInputElement)?.files?.[0];
-				if (!file) return;
-				img = URL.createObjectURL(file);
-			}}
-		/>
-	</label>
-</div>
+<label class="img" style:aspect-ratio={aspectRatio}>
+	{#if img}
+		<img src={img} alt="Картинка" />
+	{/if}
+	<input
+		{...field.as("file")}
+		onchange={async (e) => {
+			const file = (e.target as HTMLInputElement)?.files?.[0];
+			if (!file) return;
+			img = URL.createObjectURL(file);
+		}}
+	/>
+</label>
 
 <style>
-	.field {
-		display: grid;
-		grid-template-columns: 6rem 1fr 1fr;
-		grid-template-columns: 6rem 1fr;
-		align-items: center;
-		gap: 1rem;
-	}
-	h3 {
-		font-family: Manrope, Arial, Helvetica, sans-serif;
-		font-size: 1.25rem;
-	}
-
 	.img {
 		position: relative;
 		display: flex;
@@ -66,6 +53,8 @@
 	}
 	.img input {
 		position: absolute;
+		width: 0;
+		height: 0;
 		opacity: 0 !important;
 		user-select: none !important;
 		pointer-events: none !important;

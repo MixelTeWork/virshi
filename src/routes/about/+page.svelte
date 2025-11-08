@@ -219,6 +219,9 @@
 		gap: 0.5rem;
 		overflow: auto hidden;
 	}
+	.sponsors__items img {
+		height: 4rem;
+	}
 	.sponsors__items::-webkit-scrollbar {
 		width: 0;
 		height: 0;

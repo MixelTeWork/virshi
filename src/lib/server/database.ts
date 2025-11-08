@@ -32,17 +32,22 @@ export async function editData(fn: (data: Data) => void | Promise<void>)
 type StringKeys<T> = {
 	[K in keyof T]: T[K] extends string ? K : never
 }[keyof T];
-export async function updateImg<T>(obj: T, key: StringKeys<T>, file: File)
+export async function updateImg<T>(obj: T, key: StringKeys<T>, file: File, nameForNew = "")
 {
-	console.log("some log for testing");
+	// console.log("updateImg", key, file.name);
 	const ext = file.name.split(".").at(-1) || "bin"
-	const oldname = (obj[key] as string);
+	const oldname = (obj[key] as string) || nameForNew + ".";
 	const name = oldname.split(".").slice(0, -1).join(".").split("__");
 	const newname = `${name.length > 1 ? name.slice(0, -1).join("__") : name[0]}__${randomUUID()}.${ext}`;
 	(obj[key] as string) = newname;
 	await fsp.writeFile(path.resolve(dataPath, newname), Buffer.from(await file.arrayBuffer()));
-	const oldPath = path.resolve(dataPath, oldname);
-	if (fs.existsSync(oldPath)) await fsp.rm(oldPath);
+	await deleteImg(oldname);
+}
+export async function deleteImg(name: string)
+{
+	// console.log("deleteImg", name);
+	const fname = path.resolve(dataPath, name);
+	if (fs.existsSync(fname)) await fsp.rm(fname);
 }
 
 
@@ -132,7 +137,7 @@ const initial: Data = {
 			text: { ru: "Лорем ипсум долор сит амет, ад сед яуем вирис сплендиде. Сит ребум ириуре цонцлудатуряуе еи, пертинах интеллегам еум еа. Цаусае вивендум ад цум, аццумсан репрехендунт хас не, иллум индоцтум сеа но.\nИус ех идяуе темпорибус, хас цу нострум маиестатис, симул персиус вис те. Торяуатос цомпрехенсам не еос. Хис ат меис десеруиссе, нумяуам темпорибус меи еа, детрацто делецтус сингулис ан яуо. Оптион регионе лаборес иус но.", zh: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eveniet assumenda impedit quae, vero eum minima quasi quis saepe veniam sapiente pariatur accusantium tempore. Repudiandae error, possimus architecto enim corporis optio?\nLorem ipsum dolor sit amet consectetur adipisicing elit. Maiores, illum. Incidunt placeat quaerat quas beatae blanditiis excepturi cum, ad esse, assumenda saepe sunt similique eveniet tempora. Reiciendis inventore iure corporis." },
 			creators: { ru: "Создатели", zh: "Creators" },
 			sponsors: { ru: "Спонсоры", zh: "Sponsors" },
-			sponsorImgs: ["sponsor.png", "sponsor.png", "sponsor.png", "sponsor.png"],
+			sponsorImgs: ["sponsor1.png", "sponsor2.png", "sponsor3.png", "sponsor4.png"],
 			backImg: "about_bg.jpg",
 		},
 	},
