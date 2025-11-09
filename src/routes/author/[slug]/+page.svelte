@@ -58,7 +58,7 @@
 					</button>
 				</div>
 				<div class="gallery__imgs">
-					{#each author?.projects as proj, i}
+					{#each author?.projects?.slice?.(0, 4) as proj, i}
 						<button onclick={() => gallery.select(i)}>
 							<img
 								src={resolve(`/data/${proj.img}`)}

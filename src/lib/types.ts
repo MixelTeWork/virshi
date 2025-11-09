@@ -14,6 +14,12 @@ export const IProjectScheme = v.object({
 	img: v.string(),
 	text: LTextScheme,
 });
+export const IProjectFormScheme = v.object({
+	name: LTextScheme,
+	subtitle: LTextScheme,
+	img: v.file(),
+	text: LTextScheme,
+});
 
 export type IAuthorText = v.InferOutput<typeof IAuthorTextScheme>;
 export const IAuthorTextScheme = v.object({
@@ -23,6 +29,7 @@ export const IAuthorTextScheme = v.object({
 	text: LTextScheme,
 	tags: LTextScheme,
 	img: v.optional(v.file()),
+	projects: v.optional(v.array(IProjectFormScheme)),
 });
 export type ICreatorText = v.InferOutput<typeof ICreatorTextScheme>;
 export const ICreatorTextScheme = v.object({
@@ -33,7 +40,7 @@ export const ICreatorTextScheme = v.object({
 	img: v.optional(v.file()),
 });
 export type IAuthor = v.InferOutput<typeof IAuthorScheme>;
-export const IAuthorScheme = v.intersect([v.omit(IAuthorTextScheme, ["tags", "img"]), v.object({
+export const IAuthorScheme = v.intersect([v.omit(IAuthorTextScheme, ["tags", "img", "projects"]), v.object({
 	img: v.string(),
 	tags: v.array(LTextScheme),
 	projects: v.array(IProjectScheme),
@@ -87,7 +94,7 @@ export const ItxtAboutScheme = v.object({
 	text: LTextScheme,
 	creators: LTextScheme,
 	sponsors: LTextScheme,
-	sponsorImgs: v.array(v.file()),
+	sponsorImgs: v.optional(v.array(v.file())),
 	backImg: v.optional(v.file()),
 });
 export type ItxtAboutFull = v.InferOutput<typeof ItxtAboutFullScheme>;

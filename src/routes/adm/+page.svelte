@@ -11,7 +11,7 @@
 		modifyCreator,
 	} from "./data.remote";
 	import FieldImg from "./InputImg.svelte";
-	import { onMount } from "svelte";
+	import { onMount, untrack } from "svelte";
 
 	const { data } = $props();
 	updateHeader.fields.set(data.txt.header);
@@ -29,10 +29,15 @@
 		$effect(() => {
 			const imgs = data.txt.about.sponsorImgs;
 			sponsorImgs = imgs;
-			updateAbout.fields.sponsorImgs.set(imgs.map(v => new File([], v)));
+			updateAbout.fields.sponsorImgs.set(imgs.map((v) => new File([], v)));
+			authorForms.forEach((f, i) => {
+				f.form.fields.projects.set(f.author().projects.map((p) => ({ ...p, img: new File([], p.img) })));
+				authorProjs[i] = f.author().projects.map((p) => p.img);
+			});
 		});
 	});
 
+	const authorProjs = $state([] as string[][]);
 	const authorForms = data.authors.map((author, i) => {
 		const form = modifyAuthor.for(author.id);
 		form.fields.set({
@@ -42,7 +47,9 @@
 				zh: author.tags.map((t) => t.zh).join(";"),
 			},
 			img: undefined,
+			projects: [],
 		});
+		authorProjs[i] = author.projects.map((p) => p.img);
 		return { author: () => data.authors[i], form };
 	});
 
@@ -57,6 +64,7 @@
 		resetFields: (K | [K, () => any])[] = [],
 	) {
 		return f.enhance(async ({ form, data, submit }) => {
+			console.log("submit");
 			await submit();
 			form.reset();
 			await new Promise((r) => setTimeout(r));
@@ -68,7 +76,7 @@
 	}
 
 	type Page = "ui" | "pages" | "authors" | "creators";
-	let page = $state("pages" as Page);
+	let page = $state("authors" as Page);
 	const toPage = (p: Page) => () => (page = p);
 	let authorCur = $state(0);
 	const toAuthor = (a: number) => () => (authorCur = a);
@@ -124,6 +132,7 @@
 			{@render fieldTA(
 				"text",
 				updateContacts.fields.text,
+				false,
 				"Текст разбивается на несколько <p> тегов по переносам строк",
 			)}
 			{@render fieldD("mail", updateContacts.fields.mail)}
@@ -135,11 +144,16 @@
 		</form>
 		<h2>About</h2>
 		<form
-			{...enchance(updateAbout, ["backImg", ["sponsorImgs", () => sponsorImgs.map(v => new File([], v))]])}
+			{...enchance(updateAbout, ["backImg", ["sponsorImgs", () => sponsorImgs.map((v) => new File([], v))]])}
 			enctype="multipart/form-data"
 		>
 			{@render field("title", updateAbout.fields.title)}
-			{@render fieldTA("text", updateAbout.fields.text, "Текст разбивается на несколько <p> тегов по переносам строк")}
+			{@render fieldTA(
+				"text",
+				updateAbout.fields.text,
+				false,
+				"Текст разбивается на несколько <p> тегов по переносам строк",
+			)}
 			{@render field("creators", updateAbout.fields.creators)}
 			{@render field("sponsors", updateAbout.fields.sponsors)}
 			<div class="field fieldS">
@@ -156,6 +170,7 @@
 										for (let j = i; j < sponsorImgs.length - 1; j++) {
 											updateAbout.fields.sponsorImgs[j].set(updateAbout.fields.sponsorImgs[j + 1].value());
 										}
+										updateAbout.fields.sponsorImgs[sponsorImgs.length - 1].set(new File([], ""));
 										sponsorImgs.splice(i, 1);
 									}}
 								>
@@ -164,7 +179,7 @@
 							</div>
 						{/each}
 					</div>
-					<button class="sponsors__add" type="button" onclick={() => sponsorImgs.push("")}>Добавить</button>
+					<button class="btnAdd" type="button" onclick={() => sponsorImgs.push("")}>Добавить</button>
 				</div>
 			</div>
 			{@render fieldImg("backImg", updateAbout.fields.backImg, data.txt.about.backImg)}
@@ -177,15 +192,52 @@
 			{/each}
 		</nav>
 		{@const { author, form } = authorForms[authorCur]}
+		{@const prjs = authorProjs[authorCur]}
 		<h2>Author {author().id}</h2>
 		{#key author().id}
 			<form {...enchance(form, ["img"])} enctype="multipart/form-data">
 				{@render field("name", form.fields.name)}
 				{@render field("subtitle", form.fields.subtitle)}
-				{@render fieldTA("text", form.fields.text, "Текст разбивается на несколько <p> тегов по переносам строк")}
+				{@render fieldTA(
+					"text",
+					form.fields.text,
+					false,
+					"Текст разбивается на несколько <p> тегов по переносам строк",
+				)}
 				{@render field("tags", form.fields.tags, "Строка делится на теги по точке с запятой (;)")}
 				{@render fieldImg("img", form.fields.img, author().img, 4 / 5)}
-				<div class="field"><h3>projects</h3></div>
+				<div class="field fieldS">
+					<h3 style:align-self="flex-start">projects</h3>
+					<div class="projects">
+						{#each prjs as proj, i}
+							<div>
+								{@render field("name", form.fields.projects[i].name)}
+								{@render field("subtitle", form.fields.projects[i].subtitle)}
+								{@render fieldTA(
+									"text",
+									form.fields.projects[i].text,
+									true,
+									"Текст разбивается на несколько <p> тегов по переносам строк",
+								)}
+								{@render fieldImg("img", form.fields.projects[i].img, proj)}
+								<button
+									class="projects__remove"
+									type="button"
+									onclick={() => {
+										for (let j = i; j < prjs.length - 1; j++) {
+											form.fields.projects[j].set(form.fields.projects[j + 1].value());
+										}
+										form.fields.projects[prjs.length - 1].set({} as any);
+										prjs.splice(i, 1);
+									}}
+								>
+									Удалить
+								</button>
+							</div>
+						{/each}
+						<button class="btnAdd" type="button" onclick={() => prjs.push("")}>Добавить</button>
+					</div>
+				</div>
 				{@render fromEnd(form)}
 			</form>
 		{/key}
@@ -201,7 +253,7 @@
 			<form {...enchance(form, ["img"])} enctype="multipart/form-data">
 				{@render field("name", form.fields.name)}
 				{@render field("subtitle", form.fields.subtitle)}
-				{@render fieldTA("text", form.fields.text, "Текст разбивается на несколько <p> тегов по переносам строк")}
+				{@render fieldTA("text", form.fields.text, true, "Текст разбивается на несколько <p> тегов по переносам строк")}
 				{@render fieldImg("img", form.fields.img, creator().img)}
 				{@render fromEnd(form)}
 			</form>
@@ -270,8 +322,8 @@
 	</div>
 {/snippet}
 
-{#snippet fieldTA(title: string, fields: typeof updateHeader.fields.authors, text?: string)}
-	<div class="field">
+{#snippet fieldTA(title: string, fields: typeof updateHeader.fields.authors, small: boolean = false, text?: string)}
+	<div class={["field", { smallTA: small }]}>
 		<h3>
 			<span>{title}</span>
 			{@render helpIco(text)}
@@ -296,7 +348,7 @@
 
 <style>
 	.page {
-		max-width: 800px;
+		max-width: 900px;
 		margin: 0 auto;
 		display: flex;
 		flex-direction: column;
@@ -351,12 +403,50 @@
 	.sponsors__items > div:hover .sponsors__remove {
 		opacity: 1;
 	}
-	.sponsors__add {
+	.btnAdd {
 		background-color: #00000011;
 		padding: 0.2rem 0.4rem;
 		border-radius: 0.25rem;
 		margin-bottom: 1rem;
+		transition: background-color 150ms;
 	}
+	.btnAdd:hover {
+		background-color: #00000022;
+	}
+	.btnAdd:active {
+		background-color: #00000008;
+	}
+
+	.projects {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.projects > div {
+		display: flex;
+		flex-direction: column;
+		border-top: 1px solid currentColor;
+		padding: 0.5rem;
+		gap: 1rem;
+	}
+	.projects > div:first-child {
+		border: none;
+	}
+	.projects__remove {
+		background-color: #e6373722;
+		color: black;
+		padding: 0.2rem 0.4rem;
+		border-radius: 0.5rem;
+		transition: background-color 150ms;
+	}
+	.projects__remove:hover {
+		background-color: #e6373733;
+	}
+	.projects__remove:active {
+		background-color: #e6373715;
+	}
+
 	.error {
 		font-family: Manrope, Arial, Helvetica, sans-serif;
 		font-size: 1.25rem;
@@ -400,6 +490,9 @@
 		border-bottom: 1px solid currentColor;
 		outline: none;
 	}
+	.smallTA textarea {
+		height: 10em;
+	}
 
 	.help {
 		position: relative;
@@ -439,6 +532,13 @@
 		padding: 0.2rem 0.4rem;
 		border-radius: 0.25rem;
 		margin-bottom: 1rem;
+		transition: background-color 150ms;
+	}
+	.saveBtn:hover {
+		background-color: #00000022;
+	}
+	.saveBtn:active {
+		background-color: #00000008;
 	}
 
 	h1,

@@ -1,11 +1,12 @@
 import * as v from "valibot";
 import { error, redirect, type Invalid } from "@sveltejs/kit";
 import { form, getRequestEvent } from "$app/server";
-import { IAuthorTextScheme, ICreatorTextScheme, ItxtAboutScheme, ItxtAuthorScheme, ItxtAuthorsScheme, ItxtContactsScheme, ItxtFooterScheme, ItxtHeaderScheme, type Data } from "$lib/types";
+import { IAuthorTextScheme, ICreatorTextScheme, ItxtAboutScheme, ItxtAuthorScheme, ItxtAuthorsScheme, ItxtContactsScheme, ItxtFooterScheme, ItxtHeaderScheme, type Data, type IProject } from "$lib/types";
 import { deleteImg, editData, updateImg } from "$lib/server/database";
 import { env } from '$env/dynamic/private';
 import { createSession } from "$lib/server/auth";
 import { resolve } from "$app/paths";
+import { randomUUID } from "crypto";
 
 export const login = form(
 	v.object({ pwd: v.string() }),
@@ -38,7 +39,7 @@ export const updateAbout = form(ItxtAboutScheme, update(async (D, data) =>
 	if (data.backImg) await updateImg(D.txt.about, "backImg", data.backImg);
 	console.log(data.sponsorImgs);
 	const newImages = [] as string[];
-	for (const file of data.sponsorImgs)
+	for (const file of data.sponsorImgs || [])
 	{
 		if (file.size > 0)
 			await updateImg(newImages, newImages.length, file, "sponsor");
@@ -59,14 +60,36 @@ export const modifyAuthor = form(IAuthorTextScheme, update(async (D, data, inval
 {
 	const authorI = D.authors.findIndex(v => v.id == data.id);
 	if (authorI < 0) invalid("Wrong id");
-	const author = D.authors[authorI];
+	const old_author = D.authors[authorI];
 	D.authors[authorI] = {
 		...data,
-		img: author.img,
+		img: old_author.img,
 		tags: zip(data.tags.ru.split(";"), data.tags.zh.split(";")).map(([ru, zh]) => ({ ru, zh })),
-		projects: author.projects,
+		projects: old_author.projects,
 	};
-	if (data.img) await updateImg(D.authors[authorI], "img", data.img);
+	const author = D.authors[authorI];
+	if (data.img) await updateImg(author, "img", data.img);
+	const newProjects = [] as IProject[];
+	for (const proj of data.projects || [])
+	{
+		if (proj.img.size > 0)
+		{
+			const newProj: IProject = { ...proj, img: "", id: randomUUID() };
+			await updateImg(newProj, "img", proj.img, `project_a${author.id}`);
+			newProjects.push(newProj);
+		}
+		else
+		{
+			const oldProjI = author.projects.findIndex(a => a.img == proj.img.name);
+			if (oldProjI < 0) continue;
+			const oldProj = author.projects[oldProjI];
+			newProjects.push({ ...proj, img: oldProj.img, id: oldProj.id });
+			author.projects.splice(oldProjI, 1);
+		}
+	}
+	for (const proj of author.projects)
+		await deleteImg(proj.img);
+	author.projects = newProjects;
 }));
 
 export const modifyCreator = form(ICreatorTextScheme, update(async (D, data, invalid) =>
@@ -83,13 +106,13 @@ export const modifyCreator = form(ICreatorTextScheme, update(async (D, data, inv
 	if (data.img) await updateImg(D.creators[creatorI], "img", data.img);
 }));
 
-function update<T>(fn: (D: Data, data: T, invalid: Invalid) => void)
+function update<T>(fn: (D: Data, data: T, invalid: Invalid) => any | Promise<any>)
 {
-	return (data: T, invalid: Invalid) =>
+	return async (data: T, invalid: Invalid) =>
 	{
 		const { locals } = getRequestEvent();
 		if (!locals.user?.authed) error(401, "Unauthorized");
-		editData(D => fn(D, data, invalid));
+		await editData(D => fn(D, data, invalid));
 		return "ok";
 	}
 }

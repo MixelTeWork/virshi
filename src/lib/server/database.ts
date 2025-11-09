@@ -158,7 +158,7 @@ const initial: Data = {
 			tags: [{ ru: "Лорем ипсум", zh: "Lorem ipsum" }, { ru: "долор сит", zh: "dolor sit" }, { ru: "Красноречивый оратор", zh: "Eloquent speaker" }],
 			img: "author2.jpg",
 			text: { ru: "Лорем ипсум долор сит амет, ад сед яуем вирис сплендиде. Сит ребум ириуре цонцлудатуряуе еи, пертинах интеллегам еум еа. Цаусае вивендум ад цум, аццумсан репрехендунт хас не, иллум индоцтум сеа но.\nИус ех идяуе темпорибус, хас цу нострум маиестатис, симул персиус вис те. Торяуатос цомпрехенсам не еос. Хис ат меис десеруиссе, нумяуам темпорибус меи еа, детрацто делецтус сингулис ан яуо. Оптион регионе лаборес иус но.", zh: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laudantium fuga accusantium et hic! Architecto ipsam laborum doloribus dolorum numquam ut magnam commodi fuga dolores, ducimus sapiente, labore, minima cupiditate natus!\nLorem ipsum dolor, sit amet consectetur adipisicing elit. Recusandae ex natus quasi dolorem voluptate aspernatur illum nulla culpa molestiae fuga. Neque repudiandae ipsam voluptatem amet consectetur vel, harum ab architecto." },
-			projects: _projects,
+			projects: [],
 		},
 		{
 			id: "3",
@@ -167,7 +167,7 @@ const initial: Data = {
 			tags: [{ ru: "Лорем ипсум", zh: "Lorem ipsum" }, { ru: "долор сит", zh: "dolor sit" }, { ru: "Цифровой художник", zh: "Digital Artist" }],
 			img: "author3.jpg",
 			text: { ru: "Лорем ипсум долор сит амет, ад сед яуем вирис сплендиде. Сит ребум ириуре цонцлудатуряуе еи, пертинах интеллегам еум еа. Цаусае вивендум ад цум, аццумсан репрехендунт хас не, иллум индоцтум сеа но.\nИус ех идяуе темпорибус, хас цу нострум маиестатис, симул персиус вис те. Торяуатос цомпрехенсам не еос. Хис ат меис десеруиссе, нумяуам темпорибус меи еа, детрацто делецтус сингулис ан яуо. Оптион регионе лаборес иус но.", zh: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laudantium fuga accusantium et hic! Architecto ipsam laborum doloribus dolorum numquam ut magnam commodi fuga dolores, ducimus sapiente, labore, minima cupiditate natus!\nLorem ipsum dolor, sit amet consectetur adipisicing elit. Recusandae ex natus quasi dolorem voluptate aspernatur illum nulla culpa molestiae fuga. Neque repudiandae ipsam voluptatem amet consectetur vel, harum ab architecto." },
-			projects: _projects,
+			projects: [],
 		},
 		{
 			id: "4",
@@ -176,7 +176,7 @@ const initial: Data = {
 			tags: [{ ru: "Лорем ипсум", zh: "Lorem ipsum" }, { ru: "долор сит", zh: "dolor sit" }, { ru: "Архитектор виртуальности", zh: "Architect of Virtuality" }],
 			img: "author4.jpg",
 			text: { ru: "Лорем ипсум долор сит амет, ад сед яуем вирис сплендиде. Сит ребум ириуре цонцлудатуряуе еи, пертинах интеллегам еум еа. Цаусае вивендум ад цум, аццумсан репрехендунт хас не, иллум индоцтум сеа но.\nИус ех идяуе темпорибус, хас цу нострум маиестатис, симул персиус вис те. Торяуатос цомпрехенсам не еос. Хис ат меис десеруиссе, нумяуам темпорибус меи еа, детрацто делецтус сингулис ан яуо. Оптион регионе лаборес иус но.", zh: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laudantium fuga accusantium et hic! Architecto ipsam laborum doloribus dolorum numquam ut magnam commodi fuga dolores, ducimus sapiente, labore, minima cupiditate natus!\nLorem ipsum dolor, sit amet consectetur adipisicing elit. Recusandae ex natus quasi dolorem voluptate aspernatur illum nulla culpa molestiae fuga. Neque repudiandae ipsam voluptatem amet consectetur vel, harum ab architecto." },
-			projects: _projects,
+			projects: [],
 		},
 		{
 			id: "5",
@@ -185,7 +185,7 @@ const initial: Data = {
 			tags: [{ ru: "Лорем ипсум", zh: "Lorem ipsum" }, { ru: "долор сит", zh: "dolor sit" }, { ru: "Саунд-продюсер", zh: "Sound producer" }],
 			img: "author5.jpg",
 			text: { ru: "Лорем ипсум долор сит амет, ад сед яуем вирис сплендиде. Сит ребум ириуре цонцлудатуряуе еи, пертинах интеллегам еум еа. Цаусае вивендум ад цум, аццумсан репрехендунт хас не, иллум индоцтум сеа но.\nИус ех идяуе темпорибус, хас цу нострум маиестатис, симул персиус вис те. Торяуатос цомпрехенсам не еос. Хис ат меис десеруиссе, нумяуам темпорибус меи еа, детрацто делецтус сингулис ан яуо. Оптион регионе лаборес иус но.", zh: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laudantium fuga accusantium et hic! Architecto ipsam laborum doloribus dolorum numquam ut magnam commodi fuga dolores, ducimus sapiente, labore, minima cupiditate natus!\nLorem ipsum dolor, sit amet consectetur adipisicing elit. Recusandae ex natus quasi dolorem voluptate aspernatur illum nulla culpa molestiae fuga. Neque repudiandae ipsam voluptatem amet consectetur vel, harum ab architecto." },
-			projects: _projects,
+			projects: [],
 		},
 		{
 			id: "6",
@@ -194,7 +194,7 @@ const initial: Data = {
 			tags: [{ ru: "Лорем ипсум", zh: "Lorem ipsum" }, { ru: "долор сит", zh: "dolor sit" }, { ru: "Сценограф-постановщик", zh: "Set designer" }],
 			img: "author6.jpg",
 			text: { ru: "Лорем ипсум долор сит амет, ад сед яуем вирис сплендиде. Сит ребум ириуре цонцлудатуряуе еи, пертинах интеллегам еум еа. Цаусае вивендум ад цум, аццумсан репрехендунт хас не, иллум индоцтум сеа но.\nИус ех идяуе темпорибус, хас цу нострум маиестатис, симул персиус вис те. Торяуатос цомпрехенсам не еос. Хис ат меис десеруиссе, нумяуам темпорибус меи еа, детрацто делецтус сингулис ан яуо. Оптион регионе лаборес иус но.", zh: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laudantium fuga accusantium et hic! Architecto ipsam laborum doloribus dolorum numquam ut magnam commodi fuga dolores, ducimus sapiente, labore, minima cupiditate natus!\nLorem ipsum dolor, sit amet consectetur adipisicing elit. Recusandae ex natus quasi dolorem voluptate aspernatur illum nulla culpa molestiae fuga. Neque repudiandae ipsam voluptatem amet consectetur vel, harum ab architecto." },
-			projects: _projects,
+			projects: [],
 		},
 	],
 	creators: [

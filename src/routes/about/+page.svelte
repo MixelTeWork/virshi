@@ -190,6 +190,7 @@
 		overflow: auto hidden;
 	}
 	.creator {
+		flex-basis: 100%;
 		min-width: 128px;
 		aspect-ratio: 1;
 		transition: opacity 250ms;
