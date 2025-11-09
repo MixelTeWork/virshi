@@ -3,6 +3,7 @@ import fsp from "node:fs/promises";
 import type { Data, IProject } from "$lib/types";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
+import { building } from "$app/environment";
 
 export const dataPath = "data/";
 const dbPath = dataPath + "data.json";
@@ -55,7 +56,7 @@ let saveTimeout: NodeJS.Timeout | null = null;
 let saving = false;
 function saveData(retries = 3)
 {
-	if (!data || saveTimeout) return;
+	if (!data || saveTimeout || building) return;
 	saveTimeout = setTimeout(() =>
 	{
 		if (saving) return saveData(retries);
@@ -237,8 +238,11 @@ const initial: Data = {
 	],
 }
 
-if (!fs.existsSync(dataPath))
-	fs.cpSync("data_initial", dataPath, { recursive: true });
+if (!building)
+{
+	if (!fs.existsSync(dataPath))
+		fs.cpSync("data_initial", dataPath, { recursive: true });
 
-if (!fs.existsSync(dbPath))
-	fs.writeFileSync(dbPath, JSON.stringify(initial), "utf8");
+	if (!fs.existsSync(dbPath))
+		fs.writeFileSync(dbPath, JSON.stringify(initial), "utf8");
+}

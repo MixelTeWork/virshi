@@ -13,7 +13,7 @@ export const login = form(
 	async (data, invalid) =>
 	{
 		const { url } = getRequestEvent();
-		if (data.pwd != env.PWD)
+		if (data.pwd != env.PASSWORD)
 		{
 			invalid(invalid.pwd("Wrong pwd"));
 			return;
