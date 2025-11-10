@@ -76,7 +76,7 @@
 	}
 
 	type Page = "ui" | "pages" | "authors" | "creators";
-	let page = $state("authors" as Page);
+	let page = $state("ui" as Page);
 	const toPage = (p: Page) => () => (page = p);
 	let authorCur = $state(0);
 	const toAuthor = (a: number) => () => (authorCur = a);

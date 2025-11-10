@@ -240,9 +240,9 @@ const initial: Data = {
 
 if (!building)
 {
-	if (!fs.existsSync(dataPath))
-		fs.cpSync("data_initial", dataPath, { recursive: true });
-
 	if (!fs.existsSync(dbPath))
+	{
+		fs.cpSync("data_initial", dataPath, { recursive: true, force: false });
 		fs.writeFileSync(dbPath, JSON.stringify(initial), "utf8");
+	}
 }
