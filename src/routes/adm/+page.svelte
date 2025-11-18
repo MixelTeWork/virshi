@@ -1,6 +1,10 @@
 <script lang="ts">
 	import type { RemoteForm, RemoteFormField } from "@sveltejs/kit";
 	import {
+		addAuthor,
+		addCreator,
+		deleteAuthor,
+		deleteCreator,
 		updateHeader,
 		updateFooter,
 		updateContacts,
@@ -11,7 +15,8 @@
 		modifyCreator,
 	} from "./data.remote";
 	import FieldImg from "./InputImg.svelte";
-	import { onMount, untrack } from "svelte";
+	import { onMount } from "svelte";
+	import AreYouSurePopup, { ask } from "./AreYouSurePopup.svelte";
 
 	const { data } = $props();
 	updateHeader.fields.set(data.txt.header);
@@ -30,10 +35,22 @@
 			const imgs = data.txt.about.sponsorImgs;
 			sponsorImgs = imgs;
 			updateAbout.fields.sponsorImgs.set(imgs.map((v) => new File([], v)));
+			while (authorForms.length < data.authors.length) {
+				const authorId = data.authors[authorForms.length].id;
+				authorProjs.push([]);
+				authorForms.push({ authorId, form: modifyAuthor.for(authorId) });
+				authorCur = data.authors.length - 1;
+			}
 			authorForms.forEach((f, i) => {
-				f.form.fields.projects.set(f.author().projects.map((p) => ({ ...p, img: new File([], p.img) })));
-				authorProjs[i] = f.author().projects.map((p) => p.img);
+				const author = data.authors.find((a) => a.id == f.authorId)!;
+				f.form.fields.projects.set(author.projects.map((p) => ({ ...p, img: new File([], p.img) })));
+				authorProjs[i] = author.projects.map((p) => p.img);
 			});
+			while (creatorForms.length < data.creators.length) {
+				const creatorId = data.creators[creatorForms.length].id;
+				creatorForms.push({ creatorId, form: modifyCreator.for(creatorId) });
+				creatorCur = data.creators.length - 1;
+			}
 		});
 	});
 
@@ -50,13 +67,13 @@
 			projects: [],
 		});
 		authorProjs[i] = author.projects.map((p) => p.img);
-		return { author: () => data.authors[i], form };
+		return { authorId: author.id, form };
 	});
 
 	const creatorForms = data.creators.map((creator, i) => {
 		const form = modifyCreator.for(creator.id);
 		form.fields.set({ ...creator, img: undefined });
-		return { creator: () => data.creators[i], form };
+		return { creatorId: creator.id, form };
 	});
 
 	function enchance<T extends RemoteForm<any, any> | Omit<RemoteForm<any, any>, "for">, K extends keyof T["fields"]>(
@@ -64,7 +81,6 @@
 		resetFields: (K | [K, () => any])[] = [],
 	) {
 		return f.enhance(async ({ form, data, submit }) => {
-			console.log("submit");
 			await submit();
 			form.reset();
 			await new Promise((r) => setTimeout(r));
@@ -87,6 +103,8 @@
 <svelte:head>
 	<title>Управление</title>
 </svelte:head>
+
+<AreYouSurePopup />
 
 <div class="page">
 	<h1>Управление</h1>
@@ -187,77 +205,129 @@
 		</form>
 	{:else if page == "authors"}
 		<nav>
-			{#each { length: 6 } as _, i}
+			{#each data.authors as _, i}
 				<button onclick={toAuthor(i)}>{i + 1}</button>
 			{/each}
-		</nav>
-		{@const { author, form } = authorForms[authorCur]}
-		{@const prjs = authorProjs[authorCur]}
-		<h2>Author {author().id}</h2>
-		{#key author().id}
-			<form {...enchance(form, ["img"])} enctype="multipart/form-data">
-				{@render field("name", form.fields.name)}
-				{@render field("subtitle", form.fields.subtitle)}
-				{@render fieldTA(
-					"text",
-					form.fields.text,
-					false,
-					"Текст разбивается на несколько <p> тегов по переносам строк",
-				)}
-				{@render field("tags", form.fields.tags, "Строка делится на теги по точке с запятой (;)")}
-				{@render fieldImg("img", form.fields.img, author().img, 4 / 5)}
-				<div class="field fieldS">
-					<h3 style:align-self="flex-start">projects</h3>
-					<div class="projects">
-						{#each prjs as proj, i}
-							<div>
-								{@render field("name", form.fields.projects[i].name)}
-								{@render field("subtitle", form.fields.projects[i].subtitle)}
-								{@render fieldTA(
-									"text",
-									form.fields.projects[i].text,
-									true,
-									"Текст разбивается на несколько <p> тегов по переносам строк",
-								)}
-								{@render fieldImg("img", form.fields.projects[i].img, proj)}
-								<button
-									class="projects__remove"
-									type="button"
-									onclick={() => {
-										for (let j = i; j < prjs.length - 1; j++) {
-											form.fields.projects[j].set(form.fields.projects[j + 1].value());
-										}
-										form.fields.projects[prjs.length - 1].set({} as any);
-										prjs.splice(i, 1);
-									}}
-								>
-									Удалить
-								</button>
-							</div>
-						{/each}
-						<button class="btnAdd" type="button" onclick={() => prjs.push("")}>Добавить</button>
-					</div>
-				</div>
-				{@render fromEnd(form)}
+			<form {...addAuthor}>
+				<button class="nav__addBtn" aria-label="add" type="submit"></button>
 			</form>
-		{/key}
+		</nav>
+		{@const { authorId, form } = authorForms[authorCur] || { authorId: null, form: null }}
+		{@const prjs = authorProjs[authorCur]}
+		{@const authorI = data.authors.findIndex((a) => a.id == authorId)}
+		{@const author = data.authors[authorI]}
+		{#if author}
+			<div class="heading">
+				<h2>Author {authorI + 1}</h2>
+				<form
+					{...deleteAuthor.enhance(async ({ form, data, submit }) => {
+						if (!(await ask())) return;
+						submit();
+						const i = authorForms.findIndex((v) => v.authorId == data.id);
+						if (i < 0) return;
+						authorCur = i == 0 ? authorForms.length - 1 : 0;
+						authorProjs.splice(i, 1);
+						authorForms.splice(i, 1);
+						authorCur = Math.min(i, authorForms.length - 1);
+					})}
+				>
+					<input name="id" value={author.id} hidden />
+					<button class="deleteBtn" type="submit">Удалить</button>
+				</form>
+			</div>
+			{#key author.id}
+				<form {...enchance(form, ["img"])} enctype="multipart/form-data">
+					{@render field("name", form.fields.name)}
+					{@render field("subtitle", form.fields.subtitle)}
+					{@render fieldTA(
+						"text",
+						form.fields.text,
+						false,
+						"Текст разбивается на несколько <p> тегов по переносам строк",
+					)}
+					{@render field("tags", form.fields.tags, "Строка делится на теги по точке с запятой (;)")}
+					{@render fieldImg("img", form.fields.img, author.img, 4 / 5)}
+					<div class="field fieldS">
+						<h3 style:align-self="flex-start">projects</h3>
+						<div class="projects">
+							{#each prjs as proj, i}
+								<div>
+									{@render field("name", form.fields.projects[i].name)}
+									{@render field("subtitle", form.fields.projects[i].subtitle)}
+									{@render fieldTA(
+										"text",
+										form.fields.projects[i].text,
+										true,
+										"Текст разбивается на несколько <p> тегов по переносам строк",
+									)}
+									{@render fieldImg("img", form.fields.projects[i].img, proj)}
+									<button
+										class="projects__remove"
+										type="button"
+										onclick={() => {
+											for (let j = i; j < prjs.length - 1; j++) {
+												form.fields.projects[j].set(form.fields.projects[j + 1].value());
+											}
+											form.fields.projects[prjs.length - 1].set({} as any);
+											prjs.splice(i, 1);
+										}}
+									>
+										Удалить
+									</button>
+								</div>
+							{/each}
+							<button class="btnAdd" type="button" onclick={() => prjs.push("")}>Добавить</button>
+						</div>
+					</div>
+					{@render fromEnd(form)}
+				</form>
+			{/key}
+		{/if}
 	{:else if page == "creators"}
 		<nav>
-			{#each { length: 4 } as _, i}
+			{#each data.creators as _, i}
 				<button onclick={toCreator(i)}>{i + 1}</button>
 			{/each}
-		</nav>
-		{@const { creator, form } = creatorForms[creatorCur]}
-		<h2>Creator {creator().id}</h2>
-		{#key creator().id}
-			<form {...enchance(form, ["img"])} enctype="multipart/form-data">
-				{@render field("name", form.fields.name)}
-				{@render field("subtitle", form.fields.subtitle)}
-				{@render fieldTA("text", form.fields.text, true, "Текст разбивается на несколько <p> тегов по переносам строк")}
-				{@render fieldImg("img", form.fields.img, creator().img)}
-				{@render fromEnd(form)}
+			<form {...addCreator}>
+				<button class="nav__addBtn" aria-label="add" type="submit"></button>
 			</form>
-		{/key}
+		</nav>
+		{@const { creatorId, form } = creatorForms[creatorCur]}
+		{@const creatorI = data.creators.findIndex((a) => a.id == creatorId)}
+		{@const creator = data.creators[creatorI]}
+		{#if creator}
+			<div class="heading">
+				<h2>Creator {creatorI + 1}</h2>
+				<form
+					{...deleteCreator.enhance(async ({ form, data, submit }) => {
+						if (!(await ask())) return;
+						submit();
+						const i = creatorForms.findIndex((v) => v.creatorId == data.id);
+						if (i < 0) return;
+						creatorCur = i == 0 ? creatorForms.length - 1 : 0;
+						creatorForms.splice(i, 1);
+						creatorCur = Math.min(i, creatorForms.length - 1);
+					})}
+				>
+					<input name="id" value={creator.id} hidden />
+					<button class="deleteBtn" type="submit">Удалить</button>
+				</form>
+			</div>
+			{#key creator.id}
+				<form {...enchance(form, ["img"])} enctype="multipart/form-data">
+					{@render field("name", form.fields.name)}
+					{@render field("subtitle", form.fields.subtitle)}
+					{@render fieldTA(
+						"text",
+						form.fields.text,
+						true,
+						"Текст разбивается на несколько <p> тегов по переносам строк",
+					)}
+					{@render fieldImg("img", form.fields.img, creator.img)}
+					{@render fromEnd(form)}
+				</form>
+			{/key}
+		{/if}
 	{/if}
 </div>
 
@@ -369,6 +439,40 @@
 		border-right: none;
 	}
 
+	.nav__addBtn::before {
+		content: "+";
+		display: inline-flex;
+		justify-content: center;
+		align-items: center;
+		color: #1dbe4e;
+		border: 1px solid currentColor;
+		width: 0.9em;
+		height: 0.9em;
+		border-radius: 0.2em;
+		padding-bottom: 2px;
+		transition: background-color 150ms;
+	}
+	.nav__addBtn:hover::before {
+		background-color: #1dbe4e22;
+	}
+	.nav__addBtn:active::before {
+		background-color: #1dbe4e11;
+	}
+	.deleteBtn {
+		color: #e63737;
+		background-color: #e6373711;
+		padding: 0.2rem 0.4rem;
+		border-radius: 0.25rem;
+		margin-bottom: 1rem;
+		transition: background-color 150ms;
+	}
+	.deleteBtn:hover {
+		background-color: #e6373722;
+	}
+	.deleteBtn:active {
+		background-color: #e6373708;
+	}
+
 	form {
 		display: flex;
 		flex-direction: column;
@@ -415,6 +519,12 @@
 	}
 	.btnAdd:active {
 		background-color: #00000008;
+	}
+
+	.heading {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
 	}
 
 	.projects {

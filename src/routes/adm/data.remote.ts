@@ -92,6 +92,30 @@ export const modifyAuthor = form(IAuthorTextScheme, update(async (D, data, inval
 	author.projects = newProjects;
 }));
 
+export const addAuthor = form("unchecked", update(async (D, data, invalid) =>
+{
+	let nextId = 1;
+	while (D.authors.some(a => a.id == `${nextId}`)) nextId++;
+	D.authors.push({
+		id: `${nextId}`,
+		name: { ru: "", zh: "" },
+		subtitle: { ru: "", zh: "" },
+		tags: [],
+		text: { ru: "", zh: "" },
+		img: "",
+		projects: [],
+	})
+}));
+export const deleteAuthor = form(v.object({ id: v.string() }), update(async (D, data, invalid) =>
+{
+	const a = D.authors.findIndex(a => a.id == data.id);
+	if (a < 0) invalid("Author not found");
+	const author = D.authors.splice(a, 1)[0];
+	await deleteImg(author.img);
+	for (const proj of author.projects)
+		await deleteImg(proj.img);
+}));
+
 export const modifyCreator = form(ICreatorTextScheme, update(async (D, data, invalid) =>
 {
 	const creatorI = D.creators.findIndex(v => v.id == data.id);
@@ -104,6 +128,28 @@ export const modifyCreator = form(ICreatorTextScheme, update(async (D, data, inv
 		projects: creator.projects,
 	};
 	if (data.img) await updateImg(D.creators[creatorI], "img", data.img);
+}));
+
+export const addCreator = form("unchecked", update(async (D, data, invalid) =>
+{
+	let nextId = 1;
+	while (D.creators.some(a => a.id == `${nextId}`)) nextId++;
+	D.creators.push({
+		id: `${nextId}`,
+		name: { ru: "", zh: "" },
+		subtitle: { ru: "", zh: "" },
+		tags: [],
+		text: { ru: "", zh: "" },
+		img: "",
+		projects: [],
+	})
+}));
+export const deleteCreator = form(v.object({ id: v.string() }), update(async (D, data, invalid) =>
+{
+	const a = D.creators.findIndex(a => a.id == data.id);
+	if (a < 0) invalid("Creator not found");
+	const creator = D.creators.splice(a, 1)[0];
+	await deleteImg(creator.img);
 }));
 
 function update<T>(fn: (D: Data, data: T, invalid: Invalid) => any | Promise<any>)

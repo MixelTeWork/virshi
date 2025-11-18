@@ -48,7 +48,7 @@ export async function deleteImg(name: string)
 {
 	// console.log("deleteImg", name);
 	const fname = path.resolve(dataPath, name);
-	if (fs.existsSync(fname)) await fsp.rm(fname);
+	if (fs.existsSync(fname) && !fs.lstatSync(fname).isDirectory()) await fsp.rm(fname);
 }
 
 
@@ -240,7 +240,7 @@ const initial: Data = {
 
 if (!building)
 {
-	if (!fs.existsSync(dbPath))
+	if (!fs.existsSync(dbPath) || fs.readFileSync(dbPath, "utf8") == "")
 	{
 		fs.cpSync("data_initial", dataPath, { recursive: true, force: false });
 		fs.writeFileSync(dbPath, JSON.stringify(initial), "utf8");

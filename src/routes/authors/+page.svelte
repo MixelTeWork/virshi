@@ -9,30 +9,57 @@
 
 	interface ICard {
 		isEmpty: boolean;
+		showOn?: "lg" | "md";
+		w?: number;
 		name?: LText;
 		subtitle?: LText;
 		text?: LText;
 		img?: string;
 		url?: string;
 	}
-	const authorsCards = data.authors.map((author) => ({
-		isEmpty: false,
-		url: resolve(`/author/${author.id}`),
-		...author,
-	}));
-	const cards: ICard[] = [
-		authorsCards[0],
-		authorsCards[1],
-		{ isEmpty: true },
-		{ isEmpty: true },
-		authorsCards[2],
-		{ isEmpty: true },
-		{ isEmpty: true },
-		authorsCards[3],
-		authorsCards[4],
-		authorsCards[5],
-		{ isEmpty: true },
-	].map((c) => (c ? c : { isEmpty: true }));
+	const cards: ICard[] = [];
+	for (let i = 0; i < data.authors.length; i++) {
+		const author = data.authors[i];
+		let pushAfter: ICard | null = null;
+		switch (Math.floor(i / 3) % 4) {
+			case 0:
+				if (i % 3 == 2) pushAfter = { isEmpty: true, showOn: "lg" };
+				break;
+			case 1:
+				if (i % 3 == 0) cards.push({ isEmpty: true, showOn: "lg" });
+				break;
+			case 2:
+				if (i % 3 == 2) cards.push({ isEmpty: true, showOn: "lg" });
+				break;
+			case 3:
+				if (i % 3 == 1) cards.push({ isEmpty: true, showOn: "lg" });
+				break;
+		}
+		if (i % 4 == 2) {
+			cards.push({
+				isEmpty: true,
+				showOn: "md",
+			});
+			cards.push({
+				isEmpty: true,
+				showOn: "md",
+			});
+		}
+		cards.push({
+			isEmpty: false,
+			url: resolve(`/author/${author.id}`),
+			...author,
+		});
+		if (pushAfter) cards.push(pushAfter);
+	}
+	const lgL = cards.filter((c) => !c.isEmpty || c.showOn == "lg").length;
+	if (lgL % 4 > 0) {
+		cards.push({ isEmpty: true, showOn: "lg", w: 4 - (lgL % 4) });
+	}
+	const mdL = cards.filter((c) => !c.isEmpty || c.showOn == "md").length;
+	if (mdL % 3 > 0) {
+		cards.push({ isEmpty: true, showOn: "md", w: 3 - (mdL % 3) });
+	}
 </script>
 
 <svelte:head>
@@ -40,15 +67,16 @@
 </svelte:head>
 <div class="grid" transition:fade={{ duration: 150 }}>
 	{#each cards as card}
-		<div class={["card", { empty: card.isEmpty }]}>
+		<div
+			class={["card", { empty: card.isEmpty, empty_lg: card.showOn == "lg", empty_md: card.showOn == "md" }]}
+			style="--w:{card.w || 1};"
+		>
 			{#if card.isEmpty}
 				<div class="cross"></div>
 			{:else}
 				<img src={resolve(`/data/${card.img}`)} alt={$lto(card.name)} />
 				<div class="card__content">
-					<a href={card.url}
-						><img src={arrow} alt={$lt("перейти", "go to")} /></a
-					>
+					<a href={card.url}><img src={arrow} alt={$lt("перейти", "go to")} /></a>
 					<div class="card__text">
 						<h2>{$lto(card.name)}</h2>
 						<h3>{$lto(card.subtitle)}</h3>
@@ -73,22 +101,23 @@
 		flex-direction: column;
 		justify-content: end;
 	}
-	.empty:nth-child(3),
-	.empty:nth-child(4),
-	.empty:nth-child(11) {
+	.empty {
 		display: none;
+		grid-column: span var(--w, 1);
+		aspect-ratio: unset;
+	}
+	.empty_lg {
+		display: flex;
 	}
 
 	@media screen and (max-width: 1200px) {
 		.grid {
 			grid-template-columns: repeat(3, 1fr);
 		}
-		.empty {
+		.empty_lg {
 			display: none;
 		}
-		.empty:nth-child(3),
-		.empty:nth-child(4),
-		.empty:nth-child(11) {
+		.empty_md {
 			display: flex;
 		}
 	}
@@ -96,8 +125,8 @@
 		.grid {
 			grid-template-columns: 1fr 1fr;
 		}
-		.empty {
-			display: none !important;
+		.empty_md {
+			display: none;
 		}
 	}
 	@media screen and (max-width: 500px) {
