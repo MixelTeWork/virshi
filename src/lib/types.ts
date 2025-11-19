@@ -53,13 +53,15 @@ export const ItxtHeaderScheme = v.object({
 	contact: LTextScheme,
 });
 
-export type ItxtFooter = v.InferOutput<typeof ItxtFooterScheme>;
-export const ItxtFooterScheme = v.object({
-	arrival: LTextScheme,
-	city: LTextScheme,
-	date: v.string(),
-	time: v.string(),
+export type ItxtFooterForm = v.InferOutput<typeof ItxtFooterFormScheme>;
+export const ItxtFooterFormScheme = v.object({
+	text: LTextScheme,
+	speed: v.pipe(v.string(), v.decimal()),
 });
+export type ItxtFooter = v.InferOutput<typeof ItxtFooterScheme>;
+export const ItxtFooterScheme = v.intersect([v.omit(ItxtFooterFormScheme, ["speed"]), v.object({
+	speed: v.number(),
+})]);
 
 export type ItxtContacts = v.InferOutput<typeof ItxtContactsScheme>;
 export const ItxtContactsScheme = v.object({

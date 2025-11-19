@@ -1,29 +1,21 @@
 <script lang="ts">
 	import type { LText } from "$lib";
 	import { lto } from "$lib/ltext";
-	const {
-		txt,
-	}: {
-		txt: {
-			arrival: LText;
-			city: LText;
-			date: string;
-			time: string;
-		};
-	} = $props();
+	const { txt }: { txt: { text: LText; speed: number } } = $props();
 </script>
 
 <footer>
-	<div class="marquee">
-		{#each { length: 5 }}
-			<span>{$lto(txt.arrival)}</span>
-			<span class="vsep"></span>
-			<span>{$lto(txt.city)}</span>
-			<span class="vsep"></span>
-			<span>{txt.date}</span>
-			<span class="vsep"></span>
-			<span>{txt.time}</span>
-			<span class="hsep"></span>
+	<div class="marquee" style="--_t: {$lto(txt.text).length / 5 / txt.speed}s">
+		{#each { length: 4 }}
+			{#each $lto(txt.text).split("\n") as item}
+				{#each item.split("|") as el, i}
+					{#if i > 0}
+						<span class="vsep"></span>
+					{/if}
+					<span>{el}</span>
+				{/each}
+				<span class="hsep"></span>
+			{/each}
 		{/each}
 	</div>
 </footer>
@@ -45,7 +37,7 @@
 		display: flex;
 		align-items: center;
 		gap: 1rem;
-		animation: marquee 16s linear infinite;
+		animation: marquee var(--_t, 16s) linear infinite;
 	}
 
 	@keyframes marquee {
@@ -53,7 +45,7 @@
 			transform: translateX(0%);
 		}
 		to {
-			transform: translateX(-20%);
+			transform: translateX(-25%);
 		}
 	}
 

@@ -18,8 +18,11 @@ export async function getData()
 		fs.readFile(dbPath, "utf8", (err, json) =>
 		{
 			if (err) return rej(err);
-			data = JSON.parse(json);
-			res(data!);
+			const d = JSON.parse(json) as Data;
+			data = d;
+			if (!d.txt.footer.text) d.txt.footer.text = initial.txt.footer.text;
+			if (!d.txt.footer.speed) d.txt.footer.speed = initial.txt.footer.speed;
+			res(d);
 		});
 	});
 }
@@ -111,10 +114,8 @@ const initial: Data = {
 			contact: { ru: "Контакты", zh: "Contacts" },
 		},
 		footer: {
-			arrival: { ru: "Прибытие поезда «вирши»", zh: "Arrival of the train «Virshi»" },
-			city: { ru: "г. москва", zh: "Moscow" },
-			date: "28.12.2025",
-			time: "10:00 — 21:00",
+			text: { ru: "Прибытие поезда «вирши» | г. москва | 28.12.2025 | 10:00 — 21:00 \nЛорем ипсум долор | сит амет | 28.12.2025 | 10:00 — 21:00", zh: "Arrival of the train «Virshi» | Moscow | 28.12.2025 | 10:00 — 21:00 \nLorem ipsum dolor | sit amet | 28.12.2025 | 10:00 — 21:00" },
+			speed: 1,
 		},
 		contacts: {
 			title: { ru: "Контакты", zh: "Contacts" },

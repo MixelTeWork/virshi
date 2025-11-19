@@ -20,7 +20,7 @@
 
 	const { data } = $props();
 	updateHeader.fields.set(data.txt.header);
-	updateFooter.fields.set(data.txt.footer);
+	updateFooter.fields.set({ ...data.txt.footer, speed: `${data.txt.footer.speed}` });
 	updateContacts.fields.set({ ...data.txt.contacts, map: undefined });
 	updateAuthors.fields.set(data.txt.authors);
 	updateAuthor.fields.set(data.txt.author);
@@ -124,10 +124,13 @@
 		</form>
 		<h2>Footer</h2>
 		<form {...enchance(updateFooter)}>
-			{@render field("arrival", updateFooter.fields.arrival)}
-			{@render field("city", updateFooter.fields.city)}
-			{@render fieldS("date", updateFooter.fields.date)}
-			{@render fieldS("time", updateFooter.fields.time)}
+			{@render fieldS("speed", updateFooter.fields.speed, "Множитель скорости прокрутки")}
+			{@render fieldTA(
+				"text",
+				updateFooter.fields.text,
+				false,
+				"Текст разбивается на блоки по переносам строк, каждая строка делится по вертикальной черте |",
+			)}
 			{@render fromEnd(updateFooter)}
 		</form>
 	{:else if page == "pages"}
@@ -374,7 +377,7 @@
 	</div>
 {/snippet}
 
-{#snippet fieldS(title: string, field: typeof updateFooter.fields.date, text?: string)}
+{#snippet fieldS(title: string, field: typeof updateFooter.fields.speed, text?: string)}
 	<div class="field fieldS">
 		<h3>
 			<span>{title}</span>

@@ -1,7 +1,7 @@
 import * as v from "valibot";
 import { error, redirect, type Invalid } from "@sveltejs/kit";
 import { form, getRequestEvent } from "$app/server";
-import { IAuthorTextScheme, ICreatorTextScheme, ItxtAboutScheme, ItxtAuthorScheme, ItxtAuthorsScheme, ItxtContactsScheme, ItxtFooterScheme, ItxtHeaderScheme, type Data, type IProject } from "$lib/types";
+import { IAuthorTextScheme, ICreatorTextScheme, ItxtAboutScheme, ItxtAuthorScheme, ItxtAuthorsScheme, ItxtContactsScheme, ItxtFooterFormScheme, ItxtFooterScheme, ItxtHeaderScheme, type Data, type IProject } from "$lib/types";
 import { deleteImg, editData, updateImg } from "$lib/server/database";
 import { env } from '$env/dynamic/private';
 import { createSession } from "$lib/server/auth";
@@ -25,7 +25,7 @@ export const login = form(
 );
 
 export const updateHeader = form(ItxtHeaderScheme, update((D, data) => D.txt.header = data));
-export const updateFooter = form(ItxtFooterScheme, update((D, data) => D.txt.footer = data));
+export const updateFooter = form(ItxtFooterFormScheme, update((D, data) => D.txt.footer = { ...data, speed: parseFloat(data.speed) }));
 export const updateContacts = form(ItxtContactsScheme, update(async (D, data) =>
 {
 	D.txt.contacts = { ...data, map: D.txt.contacts.map }
